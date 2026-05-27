@@ -5,20 +5,59 @@ import com.example.androidbedrock.core.network.ApiResult
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
 import retrofit2.HttpException
 import java.io.IOException
 
 /**
  * Base API execution class for handling common API operations
- * Supports both single calls and Flow-based calls with safe/unsafe patterns
+ * Supports both single calls and Flow-based calls with unified isSafe pattern
+ * 
+ * Usage:
+ *   - Safe (default): executeApi { apiCall() } // wraps in ApiResult
+ *   - Unsafe: executeApi(isSafe = false) { apiCall() } // throws exceptions
+ *   - Safe Flow: executeApiFlow { apiCall() } // emits ApiResult
+ *   - Unsafe Flow: executeApiFlow(isSafe = false) { apiCall() } // throws exceptions
  */
 open class BaseApiExecutor {
 
     /**
+     * Execute single API call with unified error handling
+     * @param isSafe If true (default), wraps errors in ApiResult. If false, throws exceptions
+     * @param apiCall The API call to execute
+     * @return ApiResult<T> if isSafe is true, otherwise T (or throws)
+     */
+    protected suspend fun <T> executeApi(
+        isSafe: Boolean = true,
+        apiCall: suspend () -> T
+    ): Any {
+        return if (isSafe) {
+            executeSafeApiCall(apiCall)
+        } else {
+            executeUnsafeApiCall(apiCall)
+        }
+    }
+
+    /**
+     * Execute Flow-based API call with unified error handling
+     * @param isSafe If true (default), wraps errors in ApiResult. If false, throws exceptions
+     * @param apiCall The API call to execute
+     * @return Flow<ApiResult<T>> if isSafe is true, Flow<T> if false
+     */
+    protected fun <T> executeApiFlow(
+        isSafe: Boolean = true,
+        apiCall: suspend () -> T
+    ): Flow<Any> {
+        return if (isSafe) {
+            executeSafeApiFlow(apiCall)
+        } else {
+            executeUnsafeApiFlow(apiCall)
+        }
+    }
+
+    /**
      * Safe single API call - wraps in ApiResult
      */
-    protected suspend fun <T> executeSafeApiCall(
+    private suspend fun <T> executeSafeApiCall(
         apiCall: suspend () -> T
     ): ApiResult<T> {
         return try {
@@ -52,7 +91,7 @@ open class BaseApiExecutor {
     /**
      * Unsafe single API call - directly returns data or throws
      */
-    protected suspend fun <T> executeUnsafeApiCall(
+    private suspend fun <T> executeUnsafeApiCall(
         apiCall: suspend () -> T
     ): T {
         return try {
@@ -74,7 +113,7 @@ open class BaseApiExecutor {
     /**
      * Safe Flow-based API call
      */
-    protected fun <T> executeSafeApiFlow(
+    private fun <T> executeSafeApiFlow(
         apiCall: suspend () -> T
     ): Flow<ApiResult<T>> = flow {
         try {
@@ -115,7 +154,7 @@ open class BaseApiExecutor {
     /**
      * Unsafe Flow-based API call - directly throws exceptions
      */
-    protected fun <T> executeUnsafeApiFlow(
+    private fun <T> executeUnsafeApiFlow(
         apiCall: suspend () -> T
     ): Flow<T> = flow {
         emit(apiCall())
@@ -144,7 +183,7 @@ open class BaseApiExecutor {
     /**
      * Transform single result
      */
-    protected fun <T, R> mapSafeApiResult(
+    protected fun <T, R> mapApiResult(
         result: ApiResult<T>,
         transform: (T) -> R
     ): ApiResult<R> {
@@ -158,7 +197,7 @@ open class BaseApiExecutor {
     /**
      * Combine multiple API results
      */
-    protected suspend fun <T1, T2, R> combineApiResults(
+    protected fun <T1, T2, R> combineApiResults(
         result1: ApiResult<T1>,
         result2: ApiResult<T2>,
         transform: (T1, T2) -> R
