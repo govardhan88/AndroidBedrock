@@ -1,17 +1,17 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.kotlin.kapt)
+    alias(libs.plugins.google.devtools.ksp)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.dagger.hilt)
 }
 
 android {
-    namespace = "com.example.androidbedrock"
+    namespace = "com.govi.androidbedrock"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.androidbedrock"
+        applicationId = "com.govi.androidbedrock"
         minSdk = 24
         targetSdk = 34
         versionCode = 1
@@ -38,40 +38,49 @@ android {
     }
     buildFeatures {
         viewBinding = true
-        compose = false
+        compose = true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.11"
     }
 }
 
 dependencies {
+    implementation(project(":core"))
+    implementation(project(":core:auth"))
+
     // Core Android
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.material)
     implementation(libs.androidx.constraintlayout)
+    implementation(libs.androidx.recyclerview)
+    implementation(libs.androidx.activity.ktx)
 
     // Lifecycle & ViewModel
     implementation(libs.bundles.androidx.lifecycle)
 
     // Hilt Dependency Injection
     implementation(libs.hilt.android)
-    kapt(libs.hilt.compiler)
+    ksp(libs.hilt.compiler)
+    implementation(libs.androidx.hilt.navigation.compose)
 
     // Networking
     implementation(libs.bundles.retrofit)
     implementation(libs.bundles.okhttp)
     implementation(libs.kotlinx.serialization.json)
 
-    // Database (optional, but recommended)
+    // Database
     implementation(libs.bundles.room)
-    kapt(libs.androidx.room.compiler)
+    ksp(libs.androidx.room.compiler)
+
+    // Compose
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.bundles.compose)
 
     // Testing
     testImplementation(libs.bundles.testing)
     testImplementation(libs.turbine)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-}
-
-kapt {
-    correctErrorTypes = true
 }

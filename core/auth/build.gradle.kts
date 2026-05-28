@@ -7,7 +7,7 @@ plugins {
 }
 
 android {
-    namespace = "com.govi.androidbedrock.core"
+    namespace = "com.govi.androidbedrock.core.auth"
     compileSdk = 34
 
     defaultConfig {
@@ -22,22 +22,10 @@ android {
     kotlinOptions {
         jvmTarget = "17"
     }
-    buildFeatures {
-        compose = true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.11"
-    }
 }
 
 dependencies {
-    // Core Android
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.appcompat)
-    implementation(libs.androidx.security.crypto)
-
-    // Lifecycle
-    implementation(libs.bundles.androidx.lifecycle)
+    implementation(project(":core"))
 
     // Hilt
     implementation(libs.hilt.android)
@@ -48,12 +36,7 @@ dependencies {
     implementation(libs.bundles.okhttp)
     implementation(libs.kotlinx.serialization.json)
 
-    // Compose
-    implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.bundles.compose)
-
     // Testing
     testImplementation(libs.bundles.testing)
     testImplementation(libs.turbine)
-    androidTestImplementation(libs.androidx.junit)
 }
