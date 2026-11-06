@@ -51,6 +51,28 @@ Reports and metrics are written to:
 
 ---
 
+## 🌐 Environment & CI/CD Dynamic Configuration
+
+Base URLs and API environments are resolved dynamically using a four-tier fallback hierarchy:
+
+$$\text{Gradle Flag (-P)} \;\rightarrow\; \text{Environment / CI Secrets} \;\rightarrow\; \text{local.properties} \;\rightarrow\; \text{Default Fallback}$$
+
+### 1. Local Development (`local.properties` - Gitignored)
+Override base URLs on your local machine without committing secrets:
+```properties
+DEV_BASE_URL=https://api.dev.example.com/
+PROD_BASE_URL=https://api.example.com/
+```
+
+### 2. GitHub Actions CI/CD (`.github/workflows/ci.yml`)
+Store endpoints under **GitHub Repo Settings > Secrets and variables > Actions**:
+* `DEV_BASE_URL`
+* `PROD_BASE_URL`
+
+Injected automatically into the build via `ORG_GRADLE_PROJECT_` prefix or CLI flags.
+
+---
+
 ## 🧭 2. Navigation & Multibindings Architecture
 
 ### `AppNavigator` Channel

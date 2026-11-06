@@ -1,8 +1,34 @@
+import java.util.Properties
+import java.io.FileInputStream
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     id("govi.android.compose")
     id("govi.android.hilt")
+}
+
+// Dynamically resolves configuration properties from:
+// 1. Gradle Project Properties (-P flag, gradle.properties, or ORG_GRADLE_PROJECT_* in CI)
+// 2. System Environment Variables (e.g. from GitHub Actions / Docker)
+// 3. local.properties (Local developer machine overrides)
+// 4. Default fallback value
+fun resolveConfigProperty(key: String, default: String): String {
+    val fromGradle = providers.gradleProperty(key).orNull?.trim()
+    if (!fromGradle.isNullOrEmpty()) return fromGradle
+
+    val fromEnv = providers.environmentVariable(key).orNull?.trim()
+    if (!fromEnv.isNullOrEmpty()) return fromEnv
+
+    val localFile = rootProject.file("local.properties")
+    if (localFile.exists()) {
+        val props = Properties()
+        FileInputStream(localFile).use { props.load(it) }
+        val fromLocal = props.getProperty(key)?.trim()
+        if (!fromLocal.isNullOrEmpty()) return fromLocal
+    }
+
+    return default
 }
 
 android {
@@ -22,17 +48,21 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        // Production-safe base URL injected via Gradle BuildConfig
-        buildConfigField("String", "BASE_URL", "\"https://api.example.com/\"")
+        val defaultBaseUrl = resolveConfigProperty("BASE_URL", "https://api.example.com/")
+        buildConfigField("String", "BASE_URL", "\"$defaultBaseUrl\"")
     }
 
     buildTypes {
         debug {
-            // Environment-specific staging/dev URL for debug builds
-            buildConfigField("String", "BASE_URL", "\"https://api.dev.example.com/\"")
+            val devUrl = resolveConfigProperty("DEV_BASE_URL", "https://api.dev.example.com/")
+            buildConfigField("String", "BASE_URL", "\"$devUrl\"")
         }
         release {
-            buildConfigField("String", "BASE_URL", "\"https://api.example.com/\"")
+            val prodUrl = resolveConfigProperty(
+                "PROD_BASE_URL",
+                resolveConfigProperty("BASE_URL", "https://api.example.com/")
+            )
+            buildConfigField("String", "BASE_URL", "\"$prodUrl\"")
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
