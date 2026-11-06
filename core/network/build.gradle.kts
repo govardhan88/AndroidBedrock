@@ -9,9 +9,9 @@ android {
 
 dependencies {
     implementation(libs.retrofit.core)
-    implementation(libs.retrofit.converter.gson)
+    implementation(libs.retrofit.converter.kotlinx.serialization)
+    implementation(libs.kotlinx.serialization.json)
     implementation(libs.okhttp.core)
     implementation(libs.okhttp.logging)
-    implementation(libs.gson)
     implementation(libs.kotlinx.coroutines.core)
 }

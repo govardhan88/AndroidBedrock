@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.android.library) apply false
     alias(libs.plugins.kotlin.android) apply false
     alias(libs.plugins.kotlin.jvm) apply false
+    alias(libs.plugins.kotlin.serialization) apply false
     alias(libs.plugins.compose.compiler) apply false
     alias(libs.plugins.ksp) apply false
     alias(libs.plugins.hilt) apply false
@@ -137,7 +138,7 @@ tasks.register("createFeature") {
                 implementation(project(":core:network"))
 
                 implementation(libs.retrofit.core)
-                implementation(libs.retrofit.converter.gson)
+                implementation(libs.kotlinx.serialization.json)
                 implementation(libs.okhttp.logging)
                 implementation(libs.kotlinx.coroutines.core)
             }
@@ -150,13 +151,15 @@ tasks.register("createFeature") {
                 """
                 package govi.feature.$featureName.data.remote
 
-                import com.google.gson.annotations.SerializedName
                 import govi.feature.$featureName.domain.model.${className}Item
+                import kotlinx.serialization.SerialName
+                import kotlinx.serialization.Serializable
 
+                @Serializable
                 data class ${className}Dto(
-                    @SerializedName("id") val id: String,
-                    @SerializedName("title") val title: String,
-                    @SerializedName("description") val description: String? = null
+                    @SerialName("id") val id: String,
+                    @SerialName("title") val title: String,
+                    @SerialName("description") val description: String? = null
                 ) {
                     fun toDomain(): ${className}Item = ${className}Item(
                         id = id,

@@ -108,7 +108,7 @@ To scaffold a complete Clean Architecture feature module hierarchy in seconds, e
    - `GetOrdersItemsUseCase.kt` (domain use case)
    - `build.gradle.kts` with `govi.kotlin.jvm`
 2. **Generates `:data` submodule**:
-   - `OrdersDto.kt` (data transfer object with `.toDomain()` mapper)
+   - `OrdersDto.kt` (kotlinx.serialization `@Serializable` DTO with `.toDomain()` mapper)
    - `OrdersApiService.kt` (Retrofit service)
    - `OrdersRepositoryImpl.kt` (repository implementation using `safeApiCall`)
    - `OrdersDataModule.kt` (Hilt dependency injection module)

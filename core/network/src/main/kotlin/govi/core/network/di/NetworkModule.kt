@@ -1,16 +1,16 @@
 package govi.core.network.di
 
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import govi.core.network.BaseUrlProvider
+import kotlinx.serialization.json.Json
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.converter.kotlinx.serialization.asConverterFactory
 import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
@@ -20,7 +20,13 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideGson(): Gson = GsonBuilder().create()
+    fun provideJson(): Json = Json {
+        ignoreUnknownKeys = true
+        isLenient = true
+        coerceInputValues = true
+        encodeDefaults = true
+        prettyPrint = false
+    }
 
     @Provides
     @Singleton
@@ -49,7 +55,7 @@ object NetworkModule {
     @Singleton
     fun provideRetrofit(
         okHttpClient: OkHttpClient,
-        gson: Gson,
+        json: Json,
         baseUrlProvider: BaseUrlProvider
     ): Retrofit {
         val rawUrl = baseUrlProvider.getBaseUrl()
@@ -59,10 +65,12 @@ object NetworkModule {
             "Security violation: Production Base URL must use HTTPS. Cleartext HTTP is prohibited: $formattedUrl"
         }
 
+        val contentType = "application/json".toMediaType()
+
         return Retrofit.Builder()
             .baseUrl(formattedUrl)
             .client(okHttpClient)
-            .addConverterFactory(GsonConverterFactory.create(gson))
+            .addConverterFactory(json.asConverterFactory(contentType))
             .build()
     }
 }

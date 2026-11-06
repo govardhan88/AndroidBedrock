@@ -9,12 +9,14 @@ class KotlinJvmConventionPlugin : Plugin<Project> {
         with(target) {
             with(pluginManager) {
                 apply("org.jetbrains.kotlin.jvm")
+                apply("org.jetbrains.kotlin.plugin.serialization")
             }
 
             configureKotlinJvm()
 
             dependencies {
                 add("implementation", libs.findLibrary("kotlinx-coroutines-core").get())
+                add("implementation", libs.findLibrary("kotlinx-serialization-json").get())
                 add("testImplementation", libs.findLibrary("junit").get())
             }
         }

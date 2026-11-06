@@ -1,12 +1,14 @@
 package govi.feature.products.data.remote
 
-import com.google.gson.annotations.SerializedName
 import govi.feature.products.domain.model.ProductsItem
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class ProductsDto(
-    @SerializedName("id") val id: String,
-    @SerializedName("title") val title: String,
-    @SerializedName("description") val description: String? = null
+    @SerialName("id") val id: String,
+    @SerialName("title") val title: String,
+    @SerialName("description") val description: String? = null
 ) {
     fun toDomain(): ProductsItem = ProductsItem(
         id = id,

@@ -1,13 +1,15 @@
 package govi.feature.users.data.remote
 
-import com.google.gson.annotations.SerializedName
 import govi.feature.users.domain.model.User
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class UserDto(
-    @SerializedName("id") val id: String,
-    @SerializedName("name") val name: String,
-    @SerializedName("email") val email: String,
-    @SerializedName("avatar") val avatar: String? = null
+    @SerialName("id") val id: String,
+    @SerialName("name") val name: String,
+    @SerialName("email") val email: String,
+    @SerialName("avatar") val avatar: String? = null
 ) {
     fun toDomain(): User = User(
         id = id,
