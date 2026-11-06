@@ -6,6 +6,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import govi.core.network.BaseUrlProvider
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -17,8 +18,6 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
 
-    private const val BASE_URL = "https://jsonplaceholder.typicode.com/"
-
     @Provides
     @Singleton
     fun provideGson(): Gson = GsonBuilder().create()
@@ -27,6 +26,8 @@ object NetworkModule {
     @Singleton
     fun provideLoggingInterceptor(): HttpLoggingInterceptor {
         return HttpLoggingInterceptor().apply {
+            // In production, logging level should be NONE or BASIC to avoid
+            // leaking sensitive tokens (Bearer tokens, API keys) or PII into Logcat.
             level = HttpLoggingInterceptor.Level.BODY
         }
     }
@@ -48,10 +49,18 @@ object NetworkModule {
     @Singleton
     fun provideRetrofit(
         okHttpClient: OkHttpClient,
-        gson: Gson
+        gson: Gson,
+        baseUrlProvider: BaseUrlProvider
     ): Retrofit {
+        val rawUrl = baseUrlProvider.getBaseUrl()
+        val formattedUrl = if (rawUrl.endsWith("/")) rawUrl else "$rawUrl/"
+
+        require(formattedUrl.startsWith("https://") || formattedUrl.startsWith("http://localhost") || formattedUrl.startsWith("http://10.0.2.2")) {
+            "Security violation: Production Base URL must use HTTPS. Cleartext HTTP is prohibited: $formattedUrl"
+        }
+
         return Retrofit.Builder()
-            .baseUrl(BASE_URL)
+            .baseUrl(formattedUrl)
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create(gson))
             .build()

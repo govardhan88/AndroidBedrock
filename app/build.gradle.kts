@@ -9,6 +9,10 @@ android {
     namespace = "govi.app"
     compileSdk = 37
 
+    buildFeatures {
+        buildConfig = true
+    }
+
     defaultConfig {
         applicationId = "govi.app"
         minSdk = 24
@@ -17,10 +21,18 @@ android {
         versionName = "1.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        // Production-safe base URL injected via Gradle BuildConfig
+        buildConfigField("String", "BASE_URL", "\"https://api.example.com/\"")
     }
 
     buildTypes {
+        debug {
+            // Environment-specific staging/dev URL for debug builds
+            buildConfigField("String", "BASE_URL", "\"https://api.dev.example.com/\"")
+        }
         release {
+            buildConfigField("String", "BASE_URL", "\"https://api.example.com/\"")
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
