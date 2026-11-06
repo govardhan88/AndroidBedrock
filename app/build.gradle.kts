@@ -78,11 +78,15 @@ android {
 }
 
 dependencies {
+    // Feature fixture
+    implementation(project(":feature:fixture:presentation"))
+    implementation(project(":feature:fixture:data"))
     // Feature products
     implementation(project(":feature:products:presentation"))
     implementation(project(":feature:products:data"))
     implementation(project(":core:navigation"))
     implementation(project(":core:network"))
+    implementation(project(":core:ui"))
     implementation(project(":feature:users:presentation"))
     implementation(project(":feature:users:data"))
 

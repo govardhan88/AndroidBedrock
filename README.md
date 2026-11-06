@@ -72,9 +72,24 @@ Store endpoints under **GitHub Repo Settings > Secrets and variables > Actions**
 
 Injected automatically into the build via `ORG_GRADLE_PROJECT_` prefix or CLI flags.
 
+## 🌐 2. Network & Authentication Architecture (`:core:network`)
+
+### Optimized Network Logging (`NetworkLoggingConfig`)
+* **Environment-Aware**: Logging is dynamically configured via `NetworkLoggingConfig` (driven by `BuildConfig.DEBUG`).
+* **Zero Production Overhead**: In release builds, the logging interceptor is **completely omitted** from the `OkHttpClient` pipeline, avoiding interceptor chain overhead.
+* **Sensitive Header Redaction**: Critical authentication headers (`Authorization`, `Cookie`, `Set-Cookie`, `X-Api-Key`, `Proxy-Authorization`, `Token`) are automatically redacted with `██` in logs.
+* **4KB Logcat Chunking**: OkHttp output is chunked into 3,500-character segments to prevent Android Logcat's hard line-truncation limit.
+
+### Pluggable Token Authentication (`AuthTokenProvider` & `TokenAuthenticator`)
+* **`AuthTokenProvider`**: Optional contract for providing cached access tokens and executing token refreshes.
+* **`AuthInterceptor`**: Automatically attaches `Authorization: Bearer <token>` to outgoing requests. Public endpoints can bypass authentication using `@Headers("${AuthInterceptor.HEADER_NO_AUTH}: true")`.
+* **`TokenAuthenticator`**: OkHttp `Authenticator` handling HTTP 401 challenges with thread-safe mutex synchronization to prevent concurrent token refresh stampedes.
+* **Zero-Configuration Pluggability**: Bound via Dagger `@BindsOptionalOf`. If an application does not bind an `AuthTokenProvider`, OkHttp operates with zero auth overhead.
+* **Multibound Interceptors (`@NetworkInterceptors`)**: Any module can contribute custom OkHttp interceptors (e.g. Chucker, Cache, Analytics) via Dagger Hilt `@Provides @IntoSet @NetworkInterceptors`.
+
 ---
 
-## 🧭 2. Navigation & Multibindings Architecture
+## 🧭 3. Navigation & Multibindings Architecture
 
 ### `AppNavigator` Channel
 Navigation events are dispatched via an asynchronous Kotlin `Channel` / `Flow` decoupled from Android UI classes:
@@ -111,44 +126,34 @@ class MainActivity : ComponentActivity() {
 
 ---
 
-## 🎨 3. Unified UI Architecture (`:core:ui`)
+## 🎨 4. Bedrock UI & Design System (`:core:ui`)
 
-To prevent boilerplate across screen composables, `:core:ui` standardizes asynchronous UI states and view rendering:
+`:core:ui` provides a foundation for modern Jetpack Compose applications:
 
-### `AsyncState<T>`
-A generic, type-safe representation of asynchronous operations:
+### Design Tokens & Theming (`govi.core.ui.theme`)
+* **`AppTheme`**: Material 3 theme supporting dynamic color on Android 12+ (`dynamicColor = true`), dark/light theme switching, and accessible color roles.
+* **Tokens**: Centralized color palette, typography scale (`AppTypography`), and shape scales (`AppShapes`).
 
-```kotlin
-sealed interface AsyncState<out T> {
-    data object Loading : AsyncState<Nothing>
-    data class Success<out T>(val data: T) : AsyncState<T>
-    data class Error(val message: String, val cause: Throwable? = null) : AsyncState<Nothing>
-}
-```
+### Asynchronous State & Feedback Components (`govi.core.ui.component`)
+* **`AsyncState<T>`**: Generic state holder (`Loading`, `Success<T>`, `Error`).
+* **`AsyncContent`**: Composable with smooth crossfading, default or custom loading spinners, and error views with retry.
+* **`FullScreenLoadingView` & `InlineLoadingIndicator`**: Centered full-screen or compact inline spinners with optional status messages.
+* **`ErrorView`**: Alert layout with error icon, title, description, and "Retry" CTA.
+* **`EmptyStateView`**: Clean zero-data illustration/icon with title, description, and action button.
 
-Features compose this state into their screen states:
-```kotlin
-data class UsersUiState(
-    val usersState: AsyncState<List<User>> = AsyncState.Loading,
-    val searchQuery: String = ""
-)
-```
+### Skeleton Shimmer Loading (`govi.core.ui.component.shimmer`)
+* **`Modifier.shimmer()`**: Custom animated gradient shimmer effect.
+* **`ShimmerBox`**: Rounded shimmer placeholder box.
+* **`ShimmerListItem`**: Skeleton card placeholder mimicking list items during initial loading.
 
-### `AsyncContent` Container
-Composable wrapper handling loading indicators, error views with retry callbacks, and content emission automatically:
-
-```kotlin
-AsyncContent(
-    state = uiState.usersState,
-    onRetry = viewModel::loadUsers
-) { users ->
-    UsersListContent(users = users)
-}
-```
+### Reusable Controls & Navigation Bars
+* **`PrimaryButton`, `SecondaryButton`, `AppOutlinedButton`**: Material 3 buttons with built-in loading spinners (`isLoading: Boolean`).
+* **`AppTopBar`**: Standardized top bar encapsulating Material 3 experimental APIs with back navigation and action slots.
+* **`ObserveAsEvents`**: Lifecycle-aware (`Lifecycle.State.STARTED`) `Flow<T>` observer preventing dropped or duplicate one-time events (Snackbars, toasts, navigation intents).
 
 ---
 
-## ⚡ 4. Automated Feature Scaffolding Task
+## ⚡ 5. Automated Feature Scaffolding Task
 
 To scaffold a complete Clean Architecture feature module hierarchy in seconds, execute:
 

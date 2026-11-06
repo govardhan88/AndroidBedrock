@@ -34,3 +34,8 @@ include(":app")
 include(":feature:products:domain")
 include(":feature:products:data")
 include(":feature:products:presentation")
+
+// Feature: fixture
+include(":feature:fixture:domain")
+include(":feature:fixture:data")
+include(":feature:fixture:presentation")

@@ -379,11 +379,9 @@ tasks.register("createFeature") {
                 import androidx.compose.foundation.lazy.LazyColumn
                 import androidx.compose.foundation.lazy.items
                 import androidx.compose.material3.Card
-                import androidx.compose.material3.ExperimentalMaterial3Api
                 import androidx.compose.material3.MaterialTheme
                 import androidx.compose.material3.Scaffold
                 import androidx.compose.material3.Text
-                import androidx.compose.material3.TopAppBar
                 import androidx.compose.runtime.Composable
                 import androidx.compose.runtime.getValue
                 import androidx.compose.ui.Modifier
@@ -392,9 +390,11 @@ tasks.register("createFeature") {
                 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
                 import androidx.lifecycle.compose.collectAsStateWithLifecycle
                 import govi.core.ui.AsyncContent
+                import govi.core.ui.component.EmptyStateView
+                import govi.core.ui.component.bar.AppTopBar
+                import govi.core.ui.component.shimmer.ShimmerListItem
                 import govi.feature.$featureName.domain.model.${className}Item
 
-                @OptIn(ExperimentalMaterial3Api::class)
                 @Composable
                 fun ${className}Screen(
                     modifier: Modifier = Modifier,
@@ -404,8 +404,9 @@ tasks.register("createFeature") {
 
                     Scaffold(
                         topBar = {
-                            TopAppBar(
-                                title = { Text("${className}") }
+                            AppTopBar(
+                                title = "${className}",
+                                onBackClick = viewModel::onBackClicked
                             )
                         },
                         modifier = modifier.fillMaxSize()
@@ -413,6 +414,16 @@ tasks.register("createFeature") {
                         AsyncContent(
                             state = uiState.itemsState,
                             onRetry = viewModel::loadItems,
+                            loadingContent = {
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .padding(16.dp),
+                                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    repeat(4) { ShimmerListItem() }
+                                }
+                            },
                             modifier = Modifier
                                 .fillMaxSize()
                                 .padding(innerPadding)
@@ -428,17 +439,10 @@ tasks.register("createFeature") {
                     modifier: Modifier = Modifier
                 ) {
                     if (items.isEmpty()) {
-                        Column(
-                            modifier = modifier
-                                .fillMaxSize()
-                                .padding(16.dp),
-                            verticalArrangement = Arrangement.Center
-                        ) {
-                            Text(
-                                text = "No items available",
-                                style = MaterialTheme.typography.bodyLarge
-                            )
-                        }
+                        EmptyStateView(
+                            title = "No ${className} Available",
+                            message = "There are currently no items to display."
+                        )
                     } else {
                         LazyColumn(
                             modifier = Modifier.fillMaxSize(),

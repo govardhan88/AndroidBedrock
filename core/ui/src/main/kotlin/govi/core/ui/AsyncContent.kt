@@ -1,25 +1,20 @@
 package govi.core.ui
 
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
+import govi.core.ui.component.ErrorView
+import govi.core.ui.component.FullScreenLoadingView
 
 /**
- * Reusable Jetpack Compose container that handles Loading, Error, and Success states of [AsyncState].
+ * Reusable Jetpack Compose container that handles Loading, Error, and Success states of [AsyncState]
+ * with seamless state crossfading and customizable content slots.
  */
 @Composable
 fun <T> AsyncContent(
@@ -27,54 +22,34 @@ fun <T> AsyncContent(
     onRetry: () -> Unit,
     modifier: Modifier = Modifier,
     loadingContent: @Composable BoxScope.() -> Unit = {
-        CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+        FullScreenLoadingView()
     },
     errorContent: @Composable BoxScope.(message: String) -> Unit = { message ->
-        DefaultErrorContent(message = message, onRetry = onRetry)
+        ErrorView(
+            message = message,
+            onRetry = onRetry
+        )
     },
     content: @Composable BoxScope.(data: T) -> Unit
 ) {
     Box(modifier = modifier) {
-        when (state) {
-            is AsyncState.Loading -> loadingContent()
-            is AsyncState.Error -> errorContent(state.message)
-            is AsyncState.Success -> content(state.data)
-            is AsyncState.Idle -> Unit
-        }
-    }
-}
-
-/**
- * Default error presentation with message and retry button.
- */
-@Composable
-fun BoxScope.DefaultErrorContent(
-    message: String,
-    onRetry: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Column(
-        modifier = modifier
-            .align(Alignment.Center)
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Text(
-            text = message,
-            color = MaterialTheme.colorScheme.error,
-            style = MaterialTheme.typography.bodyLarge
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        Button(onClick = onRetry) {
-            Text("Retry")
+        Crossfade(
+            targetState = state,
+            label = "AsyncContentCrossfade"
+        ) { targetState ->
+            when (targetState) {
+                is AsyncState.Loading -> loadingContent()
+                is AsyncState.Error -> errorContent(targetState.message)
+                is AsyncState.Success -> content(targetState.data)
+                is AsyncState.Idle -> Unit
+            }
         }
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun AsyncContentLoadingPreview() {
+private fun AsyncContentLoadingPreview() {
     MaterialTheme {
         AsyncContent(
             state = AsyncState.Loading,
@@ -88,7 +63,7 @@ fun AsyncContentLoadingPreview() {
 
 @Preview(showBackground = true)
 @Composable
-fun AsyncContentErrorPreview() {
+private fun AsyncContentErrorPreview() {
     MaterialTheme {
         AsyncContent(
             state = AsyncState.Error("Failed to fetch records. Network unavailable."),
