@@ -142,5 +142,5 @@ To scaffold a complete Clean Architecture feature module hierarchy in seconds, e
 ### Setting Active Workspace in Antigravity IDE
 Open the folder in Antigravity or VS Code / Android Studio:
 ```
-/Users/tejendranathreddy/.gemini/antigravity/scratch/clean-architecture-template
+/Users/tejendranathreddy/AndroidStudioProjects/clean-architecture-template
 ```
