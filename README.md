@@ -14,7 +14,8 @@ The repository follows Google's recommended multi-module Clean Architecture guid
 │   └── convention/                     # Reusable Gradle plugins
 ├── core/
 │   ├── navigation/                     # AppNavigator, Navigation Channel, FeatureEntry multibinding
-│   └── network/                        # Retrofit, OkHttpClient, logging interceptors, NetworkResult
+│   ├── network/                        # Retrofit, OkHttpClient, logging interceptors, NetworkResult
+│   └── ui/                             # Generic AsyncState<T> and reusable AsyncContent composable
 └── feature/
     ├── users/                          # Reference Feature
     │   ├── domain/                     # Pure Kotlin (govi.kotlin.jvm): Models, UseCases, Repositories
@@ -110,7 +111,44 @@ class MainActivity : ComponentActivity() {
 
 ---
 
-## ⚡ 3. Automated Feature Scaffolding Task
+## 🎨 3. Unified UI Architecture (`:core:ui`)
+
+To prevent boilerplate across screen composables, `:core:ui` standardizes asynchronous UI states and view rendering:
+
+### `AsyncState<T>`
+A generic, type-safe representation of asynchronous operations:
+
+```kotlin
+sealed interface AsyncState<out T> {
+    data object Loading : AsyncState<Nothing>
+    data class Success<out T>(val data: T) : AsyncState<T>
+    data class Error(val message: String, val cause: Throwable? = null) : AsyncState<Nothing>
+}
+```
+
+Features compose this state into their screen states:
+```kotlin
+data class UsersUiState(
+    val usersState: AsyncState<List<User>> = AsyncState.Loading,
+    val searchQuery: String = ""
+)
+```
+
+### `AsyncContent` Container
+Composable wrapper handling loading indicators, error views with retry callbacks, and content emission automatically:
+
+```kotlin
+AsyncContent(
+    state = uiState.usersState,
+    onRetry = viewModel::loadUsers
+) { users ->
+    UsersListContent(users = users)
+}
+```
+
+---
+
+## ⚡ 4. Automated Feature Scaffolding Task
 
 To scaffold a complete Clean Architecture feature module hierarchy in seconds, execute:
 
@@ -136,9 +174,9 @@ To scaffold a complete Clean Architecture feature module hierarchy in seconds, e
    - `OrdersDataModule.kt` (Hilt dependency injection module)
    - `build.gradle.kts` with `govi.android.library` and `govi.android.hilt`
 3. **Generates `:presentation` submodule**:
-   - `OrdersUiState.kt` (Sealed interface with Loading, Success, Error states)
+   - `OrdersUiState.kt` (State holder leveraging `AsyncState<List<OrdersItem>>`)
    - `OrdersViewModel.kt` (@HiltViewModel with state flow & lifecycle management)
-   - `OrdersScreen.kt` (Material3 Composable UI with LazyColumn and `@Preview`)
+   - `OrdersScreen.kt` (Material3 Composable UI utilizing `AsyncContent`, LazyColumn, and `@Preview`)
    - `OrdersFeatureEntryImpl.kt` (`FeatureEntry` multibinding implementation)
    - `OrdersNavigationModule.kt` (Hilt `@IntoSet` multibinding module)
    - `build.gradle.kts` with `govi.android.feature`

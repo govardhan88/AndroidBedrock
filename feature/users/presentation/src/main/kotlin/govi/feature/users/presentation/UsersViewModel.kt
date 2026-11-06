@@ -4,10 +4,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import govi.core.navigation.AppNavigator
+import govi.core.ui.AsyncState
 import govi.feature.users.domain.usecase.GetUsersUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -17,7 +19,7 @@ class UsersViewModel @Inject constructor(
     private val appNavigator: AppNavigator
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow<UsersUiState>(UsersUiState.Loading)
+    private val _uiState = MutableStateFlow(UsersUiState())
     val uiState: StateFlow<UsersUiState> = _uiState.asStateFlow()
 
     init {
@@ -26,22 +28,25 @@ class UsersViewModel @Inject constructor(
 
     fun loadUsers() {
         viewModelScope.launch {
-            _uiState.value = UsersUiState.Loading
+            _uiState.update { it.copy(usersState = AsyncState.Loading) }
             getUsersUseCase().fold(
                 onSuccess = { users ->
-                    _uiState.value = UsersUiState.Success(users)
+                    _uiState.update { it.copy(usersState = AsyncState.Success(users)) }
                 },
                 onFailure = { error ->
-                    _uiState.value = UsersUiState.Error(
-                        error.message ?: "An unexpected error occurred"
-                    )
+                    _uiState.update {
+                        it.copy(
+                            usersState = AsyncState.Error(
+                                error.message ?: "An unexpected error occurred"
+                            )
+                        )
+                    }
                 }
             )
         }
     }
 
     fun onUserClicked(userId: String) {
-        // AppNavigator example navigation:
         // appNavigator.navigateTo("user_details/$userId")
     }
 }

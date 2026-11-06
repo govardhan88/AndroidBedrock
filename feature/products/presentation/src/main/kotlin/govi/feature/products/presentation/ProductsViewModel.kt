@@ -4,10 +4,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import govi.core.navigation.AppNavigator
+import govi.core.ui.AsyncState
 import govi.feature.products.domain.usecase.GetProductsItemsUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -17,7 +19,7 @@ class ProductsViewModel @Inject constructor(
     private val appNavigator: AppNavigator
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow<ProductsUiState>(ProductsUiState.Loading)
+    private val _uiState = MutableStateFlow(ProductsUiState())
     val uiState: StateFlow<ProductsUiState> = _uiState.asStateFlow()
 
     init {
@@ -26,15 +28,19 @@ class ProductsViewModel @Inject constructor(
 
     fun loadItems() {
         viewModelScope.launch {
-            _uiState.value = ProductsUiState.Loading
+            _uiState.update { it.copy(itemsState = AsyncState.Loading) }
             getItemsUseCase().fold(
                 onSuccess = { items ->
-                    _uiState.value = ProductsUiState.Success(items)
+                    _uiState.update { it.copy(itemsState = AsyncState.Success(items)) }
                 },
                 onFailure = { error ->
-                    _uiState.value = ProductsUiState.Error(
-                        error.message ?: "An unexpected error occurred"
-                    )
+                    _uiState.update {
+                        it.copy(
+                            itemsState = AsyncState.Error(
+                                error.message ?: "An unexpected error occurred"
+                            )
+                        )
+                    }
                 }
             )
         }

@@ -292,13 +292,12 @@ tasks.register("createFeature") {
                 """
                 package govi.feature.$featureName.presentation
 
+                import govi.core.ui.AsyncState
                 import govi.feature.$featureName.domain.model.${className}Item
 
-                sealed interface ${className}UiState {
-                    data object Loading : ${className}UiState
-                    data class Success(val items: List<${className}Item>) : ${className}UiState
-                    data class Error(val message: String) : ${className}UiState
-                }
+                data class ${className}UiState(
+                    val itemsState: AsyncState<List<${className}Item>> = AsyncState.Loading
+                )
                 """.trimIndent() + "\n"
             )
         }
@@ -313,10 +312,12 @@ tasks.register("createFeature") {
                 import androidx.lifecycle.viewModelScope
                 import dagger.hilt.android.lifecycle.HiltViewModel
                 import govi.core.navigation.AppNavigator
+                import govi.core.ui.AsyncState
                 import govi.feature.$featureName.domain.usecase.Get${className}ItemsUseCase
                 import kotlinx.coroutines.flow.MutableStateFlow
                 import kotlinx.coroutines.flow.StateFlow
                 import kotlinx.coroutines.flow.asStateFlow
+                import kotlinx.coroutines.flow.update
                 import kotlinx.coroutines.launch
                 import javax.inject.Inject
 
@@ -326,7 +327,7 @@ tasks.register("createFeature") {
                     private val appNavigator: AppNavigator
                 ) : ViewModel() {
 
-                    private val _uiState = MutableStateFlow<${className}UiState>(${className}UiState.Loading)
+                    private val _uiState = MutableStateFlow(${className}UiState())
                     val uiState: StateFlow<${className}UiState> = _uiState.asStateFlow()
 
                     init {
@@ -335,15 +336,19 @@ tasks.register("createFeature") {
 
                     fun loadItems() {
                         viewModelScope.launch {
-                            _uiState.value = ${className}UiState.Loading
+                            _uiState.update { it.copy(itemsState = AsyncState.Loading) }
                             getItemsUseCase().fold(
                                 onSuccess = { items ->
-                                    _uiState.value = ${className}UiState.Success(items)
+                                    _uiState.update { it.copy(itemsState = AsyncState.Success(items)) }
                                 },
                                 onFailure = { error ->
-                                    _uiState.value = ${className}UiState.Error(
-                                        error.message ?: "An unexpected error occurred"
-                                    )
+                                    _uiState.update {
+                                        it.copy(
+                                            itemsState = AsyncState.Error(
+                                                error.message ?: "An unexpected error occurred"
+                                            )
+                                        )
+                                    }
                                 }
                             )
                         }
@@ -364,7 +369,6 @@ tasks.register("createFeature") {
                 package govi.feature.$featureName.presentation
 
                 import androidx.compose.foundation.layout.Arrangement
-                import androidx.compose.foundation.layout.Box
                 import androidx.compose.foundation.layout.Column
                 import androidx.compose.foundation.layout.PaddingValues
                 import androidx.compose.foundation.layout.Spacer
@@ -374,9 +378,7 @@ tasks.register("createFeature") {
                 import androidx.compose.foundation.layout.padding
                 import androidx.compose.foundation.lazy.LazyColumn
                 import androidx.compose.foundation.lazy.items
-                import androidx.compose.material3.Button
                 import androidx.compose.material3.Card
-                import androidx.compose.material3.CircularProgressIndicator
                 import androidx.compose.material3.ExperimentalMaterial3Api
                 import androidx.compose.material3.MaterialTheme
                 import androidx.compose.material3.Scaffold
@@ -384,12 +386,12 @@ tasks.register("createFeature") {
                 import androidx.compose.material3.TopAppBar
                 import androidx.compose.runtime.Composable
                 import androidx.compose.runtime.getValue
-                import androidx.compose.ui.Alignment
                 import androidx.compose.ui.Modifier
                 import androidx.compose.ui.tooling.preview.Preview
                 import androidx.compose.ui.unit.dp
                 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
                 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+                import govi.core.ui.AsyncContent
                 import govi.feature.$featureName.domain.model.${className}Item
 
                 @OptIn(ExperimentalMaterial3Api::class)
@@ -408,63 +410,54 @@ tasks.register("createFeature") {
                         },
                         modifier = modifier.fillMaxSize()
                     ) { innerPadding ->
-                        Box(
+                        AsyncContent(
+                            state = uiState.itemsState,
+                            onRetry = viewModel::loadItems,
                             modifier = Modifier
                                 .fillMaxSize()
                                 .padding(innerPadding)
+                        ) { items ->
+                            ${className}ListContent(items = items)
+                        }
+                    }
+                }
+
+                @Composable
+                fun ${className}ListContent(
+                    items: List<${className}Item>,
+                    modifier: Modifier = Modifier
+                ) {
+                    if (items.isEmpty()) {
+                        Column(
+                            modifier = modifier
+                                .fillMaxSize()
+                                .padding(16.dp),
+                            verticalArrangement = Arrangement.Center
                         ) {
-                            when (val state = uiState) {
-                                is ${className}UiState.Loading -> {
-                                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-                                }
-                                is ${className}UiState.Error -> {
-                                    Column(
-                                        modifier = Modifier
-                                            .align(Alignment.Center)
-                                            .padding(16.dp),
-                                        horizontalAlignment = Alignment.CenterHorizontally
-                                    ) {
+                            Text(
+                                text = "No items available",
+                                style = MaterialTheme.typography.bodyLarge
+                            )
+                        }
+                    } else {
+                        LazyColumn(
+                            modifier = Modifier.fillMaxSize(),
+                            contentPadding = PaddingValues(16.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            items(items, key = { it.id }) { item ->
+                                Card(modifier = Modifier.fillMaxWidth()) {
+                                    Column(modifier = Modifier.padding(16.dp)) {
                                         Text(
-                                            text = state.message,
-                                            color = MaterialTheme.colorScheme.error,
-                                            style = MaterialTheme.typography.bodyLarge
+                                            text = item.title,
+                                            style = MaterialTheme.typography.titleMedium
                                         )
-                                        Spacer(modifier = Modifier.height(16.dp))
-                                        Button(onClick = { viewModel.loadItems() }) {
-                                            Text("Retry")
-                                        }
-                                    }
-                                }
-                                is ${className}UiState.Success -> {
-                                    if (state.items.isEmpty()) {
-                                        Text(
-                                            text = "No items available",
-                                            modifier = Modifier.align(Alignment.Center),
-                                            style = MaterialTheme.typography.bodyMedium
-                                        )
-                                    } else {
-                                        LazyColumn(
-                                            modifier = Modifier.fillMaxSize(),
-                                            contentPadding = PaddingValues(16.dp),
-                                            verticalArrangement = Arrangement.spacedBy(8.dp)
-                                        ) {
-                                            items(state.items, key = { it.id }) { item ->
-                                                Card(modifier = Modifier.fillMaxWidth()) {
-                                                    Column(modifier = Modifier.padding(16.dp)) {
-                                                        Text(
-                                                            text = item.title,
-                                                            style = MaterialTheme.typography.titleMedium
-                                                        )
-                                                        if (item.description.isNotEmpty()) {
-                                                            Spacer(modifier = Modifier.height(4.dp))
-                                                            Text(
-                                                                text = item.description,
-                                                                style = MaterialTheme.typography.bodyMedium
-                                                            )
-                                                        }
-                                                    }
-                                                }
-                                            }
+                                        if (item.description.isNotEmpty()) {
+                                            Spacer(modifier = Modifier.height(4.dp))
+                                            Text(
+                                                text = item.description,
+                                                style = MaterialTheme.typography.bodyMedium
+                                            )
                                         }
                                     }
                                 }
@@ -477,44 +470,12 @@ tasks.register("createFeature") {
                 @Composable
                 fun ${className}ScreenPreview() {
                     MaterialTheme {
-                        ${className}ScreenContent(
+                        ${className}ListContent(
                             items = listOf(
                                 ${className}Item("1", "Sample Item 1", "Description for item 1"),
                                 ${className}Item("2", "Sample Item 2", "Description for item 2")
                             )
                         )
-                    }
-                }
-
-                @OptIn(ExperimentalMaterial3Api::class)
-                @Composable
-                private fun ${className}ScreenContent(
-                    items: List<${className}Item>
-                ) {
-                    Scaffold(
-                        topBar = {
-                            TopAppBar(title = { Text("${className}") })
-                        }
-                    ) { innerPadding ->
-                        LazyColumn(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(innerPadding),
-                            contentPadding = PaddingValues(16.dp),
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            items(items, key = { it.id }) { item ->
-                                Card(modifier = Modifier.fillMaxWidth()) {
-                                    Column(modifier = Modifier.padding(16.dp)) {
-                                        Text(text = item.title, style = MaterialTheme.typography.titleMedium)
-                                        if (item.description.isNotEmpty()) {
-                                            Spacer(modifier = Modifier.height(4.dp))
-                                            Text(text = item.description, style = MaterialTheme.typography.bodyMedium)
-                                        }
-                                    }
-                                }
-                            }
-                        }
                     }
                 }
                 """.trimIndent() + "\n"
