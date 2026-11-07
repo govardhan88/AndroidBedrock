@@ -90,6 +90,7 @@ dependencies {
     // Feature products
     implementation(project(":feature:products:presentation"))
     implementation(project(":feature:products:data"))
+    implementation(project(":core:base"))
     implementation(project(":core:navigation"))
     implementation(project(":core:network"))
     implementation(project(":core:datastore"))

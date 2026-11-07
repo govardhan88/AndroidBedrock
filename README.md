@@ -13,10 +13,11 @@ The repository follows Google's recommended multi-module Clean Architecture guid
 ├── build-logic/                        # Composite Gradle build for convention plugins
 │   └── convention/                     # Reusable Gradle plugins
 ├── core/
-│   ├── navigation/                     # AppNavigator, Navigation Channel, FeatureEntry multibinding
-│   ├── network/                        # Retrofit, OkHttpClient, dynamic logging, auth interceptors
+│   ├── base/                           # Dispatchers (AppDispatchers), MVI BaseViewModel, AppResult, UseCases
+│   ├── navigation/                     # AppRoute, AppNavigator, FeatureEntry multibindings
+│   ├── network/                        # Retrofit, NetworkMonitor, dynamic logging, auth interceptors
 │   ├── datastore/                      # Jetpack DataStore, TokenDataStore, persistent auth tokens
-│   └── ui/                             # Bedrock Compose Design System, tokens, components, AsyncState<T>
+│   └── ui/                             # Bedrock Compose Design System, NoInternetHost, tokens, AsyncState<T>
 └── feature/
     │   # 1. Divided Architecture (3 Submodules) - For Complex Core Domains
     ├── users/                          # Reference Divided Feature
@@ -107,6 +108,40 @@ Injected automatically into the build via `ORG_GRADLE_PROJECT_` prefix or CLI fl
 * **`TokenDataStoreImpl`**: Implementation backed by `DataStore<Preferences>`.
 * **`DefaultAuthTokenProvider`**: Production-ready base class connecting `TokenDataStore` directly into `:core:network`'s `AuthTokenProvider` contract.
 * **`DataStoreModule`**: Hilt module injecting singleton `DataStore<Preferences>` via `PreferenceDataStoreFactory`.
+
+---
+
+## 🧱 2.6. Core Base Module (`:core:base`)
+
+`:core:base` provides the foundational architecture abstractions, concurrency management, and MVI foundation for all features and core modules:
+
+### 1. Concurrency & Dispatchers (`govi.core.base.dispatcher`)
+* **`AppDispatchers`**: Centralized contract exposing `io`, `default`, `main`, `mainImmediate`, and `unconfined` coroutine dispatchers for deterministic testing.
+* **`DefaultAppDispatchers`**: Production implementation backed by standard `kotlinx.coroutines.Dispatchers`.
+* **Qualifiers**: `@IoDispatcher`, `@DefaultDispatcher`, `@MainDispatcher`, `@MainImmediateDispatcher` for dependency injection.
+* **`DispatchersModule`**: Hilt module providing dispatcher bindings across the app.
+
+### 2. MVI & Base ViewModel (`govi.core.base.mvi` & `govi.core.base.viewmodel`)
+* **`UiState`**: Marker interface for immutable screen state objects.
+* **`UiIntent`**: Marker interface for user actions and intents.
+* **`UiEffect`**: Marker interface for one-time side effects (navigation, toasts, snackbars).
+* **`BaseViewModel<State, Intent, Effect>`**:
+  * Exposes thread-safe `StateFlow<State>`.
+  * Emits single-shot events via buffered `Channel<Effect>` exposed as `Flow<Effect>`.
+  * Encapsulates `updateState { ... }` and `sendEffect(...)`.
+  * Abstract `processIntent(intent: Intent)` enforcing Unidirectional Data Flow (UDF).
+
+### 3. Functional Result & Error Monad (`govi.core.base.result`)
+* **`AppResult<T>`**: Strongly-typed result container (`Success<T>`, `Error`, `Loading`) with functional operators:
+  * `map { ... }`: Value transformation preserving error and loading states.
+  * `onSuccess { ... }` & `onError { ... }`: Declarative chaining.
+  * `getOrNull()`: Safe nullable extraction.
+* **`AppError`**: Structured domain error hierarchy:
+  * `Network`, `Server`, `Authentication`, `NotFound`, `Validation`, `Unknown`.
+
+### 4. Base Use Cases (`govi.core.base.usecase`)
+* **`BaseUseCase<P, R>`**: Suspending use case executing on `AppDispatchers.io` with automated exception wrapping into `AppResult.Error(AppError.Unknown)`.
+* **`FlowUseCase<P, R>`**: Reactive use case emitting streams on `AppDispatchers.io` with structured `.catch { ... }` error handling.
 
 ---
 
