@@ -214,6 +214,38 @@ To scaffold a complete Clean Architecture feature module hierarchy in seconds, e
 
 ---
 
+## 🛡️ 6. Code Quality, Spotless & Git Pre-Commit Hook
+
+The repository enforces a strict **Zero-Warning Policy** and automated code formatting:
+
+### 1. Zero-Warning Policy (`-Werror`)
+Every module compiles with `allWarningsAsErrors.set(true)`. Any unused variable, deprecated call, or compiler warning immediately fails compilation.
+
+### 2. Auto-Formatting via Spotless (`ktlint`)
+All Kotlin files and Gradle scripts follow the official Kotlin style guide via Spotless:
+* Format code:
+  ```bash
+  ./gradlew spotlessApply
+  ```
+* Verify code format:
+  ```bash
+  ./gradlew spotlessCheck
+  ```
+
+### 3. Automated Git Pre-Commit Hook (`.githooks/pre-commit`)
+A checked-in pre-commit hook automatically intercepts `git commit`:
+1. Runs `spotlessApply` to format any staged code in-place.
+2. Automatically re-stages modified files.
+3. Enforces compilation under the Zero-Warning Policy (`allWarningsAsErrors = true`).
+4. Rejects the commit if any warnings or compilation errors are detected.
+
+To configure git hooks on any machine or CI:
+```bash
+./gradlew installGitHooks
+```
+
+---
+
 ## 🚀 Building & Running
 
 ### Build All Modules
