@@ -15,6 +15,7 @@ The repository follows Google's recommended multi-module Clean Architecture guid
 ├── core/
 │   ├── navigation/                     # AppNavigator, Navigation Channel, FeatureEntry multibinding
 │   ├── network/                        # Retrofit, OkHttpClient, dynamic logging, auth interceptors
+│   ├── datastore/                      # Jetpack DataStore, TokenDataStore, persistent auth tokens
 │   └── ui/                             # Bedrock Compose Design System, tokens, components, AsyncState<T>
 └── feature/
     │   # 1. Divided Architecture (3 Submodules) - For Complex Core Domains
@@ -92,8 +93,20 @@ Injected automatically into the build via `ORG_GRADLE_PROJECT_` prefix or CLI fl
 * **`AuthTokenProvider`**: Optional contract for providing cached access tokens and executing token refreshes.
 * **`AuthInterceptor`**: Automatically attaches `Authorization: Bearer <token>` to outgoing requests. Public endpoints can bypass authentication using `@Headers("${AuthInterceptor.HEADER_NO_AUTH}: true")`.
 * **`TokenAuthenticator`**: OkHttp `Authenticator` handling HTTP 401 challenges with thread-safe mutex synchronization to prevent concurrent token refresh stampedes.
+* **Loop Breaker**: Rejects infinite 401 cascades when retry count exceeds 3 (`responseCount(response) >= 3`) and dispatches `onAuthFailed()`.
 * **Zero-Configuration Pluggability**: Bound via Dagger `@BindsOptionalOf`. If an application does not bind an `AuthTokenProvider`, OkHttp operates with zero auth overhead.
 * **Multibound Interceptors (`@NetworkInterceptors`)**: Any module can contribute custom OkHttp interceptors (e.g. Chucker, Cache, Analytics) via Dagger Hilt `@Provides @IntoSet @NetworkInterceptors`.
+
+---
+
+## 💾 2.5. Token Persistence & Jetpack DataStore (`:core:datastore`)
+
+`:core:datastore` provides non-blocking, transaction-safe token and preference storage powered by Android Jetpack DataStore:
+
+* **`TokenDataStore`**: Interface exposing reactive `Flow<String?>` streams and suspend functions for access/refresh tokens.
+* **`TokenDataStoreImpl`**: Implementation backed by `DataStore<Preferences>`.
+* **`DefaultAuthTokenProvider`**: Production-ready base class connecting `TokenDataStore` directly into `:core:network`'s `AuthTokenProvider` contract.
+* **`DataStoreModule`**: Hilt module injecting singleton `DataStore<Preferences>` via `PreferenceDataStoreFactory`.
 
 ---
 

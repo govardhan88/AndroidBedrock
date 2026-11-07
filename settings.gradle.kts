@@ -21,6 +21,7 @@ rootProject.name = "govi-clean-architecture-template"
 include(":core:navigation")
 include(":core:network")
 include(":core:ui")
+include(":core:datastore")
 
 // Feature Users
 include(":feature:users:domain")
