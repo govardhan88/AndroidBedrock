@@ -38,6 +38,9 @@ import govi.core.ui.component.dialog.AppConfirmationDialog
 import govi.core.ui.component.input.AppPasswordTextField
 import govi.core.ui.component.input.AppSearchField
 import govi.core.ui.component.input.AppTextField
+import govi.core.ui.component.nointernet.NoInternetBanner
+import govi.core.ui.component.nointernet.NoInternetBottomSheet
+import govi.core.ui.component.nointernet.NoInternetDialog
 import govi.core.ui.component.shimmer.ShimmerListItem
 import govi.core.ui.theme.AppTheme
 
@@ -50,6 +53,8 @@ fun DesignSystemShowcase() {
     var passwordValue by remember { mutableStateOf("secret") }
     var searchQuery by remember { mutableStateOf("") }
     var showDialog by remember { mutableStateOf(false) }
+    var showNoInternetDialog by remember { mutableStateOf(false) }
+    var showNoInternetSheet by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -129,6 +134,34 @@ fun DesignSystemShowcase() {
                 PrimaryButton(text = "Open Confirmation Dialog", onClick = { showDialog = true }, modifier = Modifier.fillMaxWidth())
             }
 
+            AppDivider()
+
+            // 7. No Internet Formats
+            ShowcaseSection(title = "No Internet State Formats (Default: Dialog)") {
+                Text(
+                    text = "Sticky Banner Format:",
+                    style = MaterialTheme.typography.labelLarge,
+                )
+                NoInternetBanner(
+                    isVisible = true,
+                    onRetry = {},
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                PrimaryButton(
+                    text = "Launch No Internet Dialog (Default)",
+                    onClick = { showNoInternetDialog = true },
+                    modifier = Modifier.fillMaxWidth(),
+                )
+
+                SecondaryButton(
+                    text = "Launch No Internet BottomSheet",
+                    onClick = { showNoInternetSheet = true },
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
+
             if (showDialog) {
                 AppConfirmationDialog(
                     title = "Confirm Action",
@@ -136,6 +169,20 @@ fun DesignSystemShowcase() {
                     confirmLabel = "Confirm",
                     onConfirm = { showDialog = false },
                     onDismiss = { showDialog = false },
+                )
+            }
+
+            if (showNoInternetDialog) {
+                NoInternetDialog(
+                    onRetry = { showNoInternetDialog = false },
+                    onDismiss = { showNoInternetDialog = false },
+                )
+            }
+
+            if (showNoInternetSheet) {
+                NoInternetBottomSheet(
+                    onRetry = { showNoInternetSheet = false },
+                    onDismissRequest = { showNoInternetSheet = false },
                 )
             }
         }

@@ -270,6 +270,36 @@ All presentation screens adhere to official Android Architecture and Jetpack Com
 4. **Scaffolding Automation**:
    * Any new feature generated via `./gradlew createFeature` automatically adheres to this pattern out-of-the-box.
 
+### 🌐 No Internet Architecture & Flexible Presentation Formats (`:core:network` + `:core:ui`)
+The template features a comprehensive offline and network monitoring system with pluggable, beautiful UI presentations:
+
+#### 1. Real-Time Network Monitoring (`:core:network`)
+* **`NetworkMonitor`**: Clean interface emitting `isOnline: Flow<Boolean>` and providing synchronous `isCurrentlyOnline: Boolean`.
+* **`ConnectivityManagerNetworkMonitor`**: Production implementation observing active network capabilities (`NET_CAPABILITY_INTERNET` + `NET_CAPABILITY_VALIDATED`) via Android's `ConnectivityManager`. Bound in `NetworkConnectivityModule`.
+
+#### 2. Design Formats Choice (`NoInternetFormat` - Default: `Dialog`)
+Developers can choose between 5 distinct, enterprise-grade design formats:
+* **`Dialog` (DEFAULT)**: Polished Material 3 modal alert dialog with an elevated `errorContainer` badge containing `Icons.Default.WifiOff`, supportive explanation, "Try Again" primary button, and "Network Settings" secondary button.
+* **`FullScreen`**: Complete page replacement layout with a large 88.dp circular badge, headline, supportive text, and stacked/inline action buttons. Ideal for blocking screens that require active internet.
+* **`BottomSheet`**: Slide-up modal bottom sheet with drag handle, centered iconography, and full-width actions.
+* **`Banner`**: Non-intrusive animated sticky top banner with `expandVertically() + fadeIn()` transitions. Allows users to continue browsing cached/offline content undisturbed.
+* **`Snackbar`**: Floating bottom toast/pill with retry CTA.
+
+#### 3. Automatic System Settings Integration
+* **`openWirelessSettings(context)`**: Failsafe intent launcher automatically opening the device's system Wi-Fi / Wireless Settings screen with zero boilerplate.
+
+#### 4. Declarative Usage (`NoInternetHost`)
+Wrap any screen or root navigation graph in `NoInternetHost`:
+```kotlin
+NoInternetHost(
+    isOffline = !isOnline,
+    format = NoInternetFormat.Dialog, // Default as Dialog; choice to switch to FullScreen, BottomSheet, Banner, or Snackbar
+    onRetry = { /* refresh logic */ },
+) {
+    NavHost(...) { ... }
+}
+```
+
 ---
 
 ## ⚡ 5. Automated Feature Scaffolding Task (`createFeature`)
