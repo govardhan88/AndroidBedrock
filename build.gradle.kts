@@ -371,8 +371,7 @@ tasks.register("createFeature") {
                     companion object {
                         @Provides
                         @Singleton
-                        fun provide${className}ApiService(retrofit: Retrofit): ${className}ApiService =
-                            retrofit.create(${className}ApiService::class.java)
+                        fun provide${className}ApiService(retrofit: Retrofit): ${className}ApiService = retrofit.create(${className}ApiService::class.java)
                     }
                 }
                 """.trimIndent() + "\n",
