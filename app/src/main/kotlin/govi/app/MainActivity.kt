@@ -13,6 +13,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import govi.core.navigation.AppNavigator
 import govi.core.navigation.FeatureEntry
 import govi.core.navigation.NavigationIntent
+import govi.core.navigation.route.AppRoute
 import govi.core.ui.theme.AppTheme
 import govi.core.ui.util.ObserveAsEvents
 import javax.inject.Inject
@@ -36,27 +37,58 @@ class MainActivity : ComponentActivity() {
                     ObserveAsEvents(appNavigator.navigationChannel) { intent ->
                         when (intent) {
                             is NavigationIntent.NavigateTo -> {
-                                navController.navigate(intent.route) {
-                                    intent.popUpToRoute?.let { popUpRoute ->
-                                        popUpTo(popUpRoute) {
-                                            inclusive = intent.inclusive
+                                val route = intent.route
+                                val popUp = intent.popUpToRoute
+                                when (route) {
+                                    is String -> {
+                                        navController.navigate(route) {
+                                            popUp?.let { target ->
+                                                if (target is String) {
+                                                    popUpTo(target) {
+                                                        inclusive = intent.inclusive
+                                                    }
+                                                } else {
+                                                    popUpTo(target) {
+                                                        inclusive = intent.inclusive
+                                                    }
+                                                }
+                                            }
+                                            launchSingleTop = intent.isSingleTop
                                         }
                                     }
-                                    launchSingleTop = intent.isSingleTop
+                                    else -> {
+                                        navController.navigate(route) {
+                                            popUp?.let { target ->
+                                                if (target is String) {
+                                                    popUpTo(target) {
+                                                        inclusive = intent.inclusive
+                                                    }
+                                                } else {
+                                                    popUpTo(target) {
+                                                        inclusive = intent.inclusive
+                                                    }
+                                                }
+                                            }
+                                            launchSingleTop = intent.isSingleTop
+                                        }
+                                    }
                                 }
                             }
                             is NavigationIntent.NavigateBack -> {
                                 navController.popBackStack()
                             }
                             is NavigationIntent.PopTo -> {
-                                navController.popBackStack(intent.route, intent.inclusive)
+                                when (val route = intent.route) {
+                                    is String -> navController.popBackStack(route, intent.inclusive)
+                                    else -> navController.popBackStack(route, intent.inclusive)
+                                }
                             }
                         }
                     }
 
                     NavHost(
                         navController = navController,
-                        startDestination = "users",
+                        startDestination = AppRoute.Users,
                     ) {
                         featureEntries.forEach { entry ->
                             entry.registerRoute(this, navController)

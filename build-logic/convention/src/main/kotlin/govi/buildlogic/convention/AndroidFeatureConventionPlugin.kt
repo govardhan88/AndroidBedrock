@@ -12,6 +12,7 @@ class AndroidFeatureConventionPlugin : Plugin<Project> {
                 apply("govi.android.library")
                 apply("govi.android.compose")
                 apply("govi.android.hilt")
+                apply("org.jetbrains.kotlin.plugin.serialization")
             }
 
             dependencies {
@@ -19,6 +20,7 @@ class AndroidFeatureConventionPlugin : Plugin<Project> {
                 add("implementation", project(":core:ui"))
                 add("implementation", libs.findLibrary("androidx-navigation-compose").get())
                 add("implementation", libs.findLibrary("androidx-hilt-navigation-compose").get())
+                add("implementation", libs.findLibrary("kotlinx-serialization-json").get())
             }
         }
     }

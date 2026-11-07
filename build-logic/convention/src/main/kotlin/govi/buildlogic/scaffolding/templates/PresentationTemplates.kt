@@ -214,19 +214,18 @@ object PresentationTemplates {
         import androidx.navigation.NavHostController
         import androidx.navigation.compose.composable
         import govi.core.navigation.FeatureEntry
+        import govi.core.navigation.route.AppRoute
         import govi.feature.$featureName.presentation.${className}Screen
         import javax.inject.Inject
 
         class ${className}FeatureEntryImpl
             @Inject
             constructor() : FeatureEntry {
-                override val featureRoute: String = "$featureName"
-
                 override fun registerRoute(
                     navGraphBuilder: NavGraphBuilder,
                     navController: NavHostController,
                 ) {
-                    navGraphBuilder.composable(featureRoute) {
+                    navGraphBuilder.composable<AppRoute.$className> {
                         ${className}Screen()
                     }
                 }

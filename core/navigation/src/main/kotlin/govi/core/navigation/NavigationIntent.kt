@@ -2,8 +2,8 @@ package govi.core.navigation
 
 sealed interface NavigationIntent {
     data class NavigateTo(
-        val route: String,
-        val popUpToRoute: String? = null,
+        val route: Any,
+        val popUpToRoute: Any? = null,
         val inclusive: Boolean = false,
         val isSingleTop: Boolean = true,
     ) : NavigationIntent
@@ -11,7 +11,7 @@ sealed interface NavigationIntent {
     data object NavigateBack : NavigationIntent
 
     data class PopTo(
-        val route: String,
+        val route: Any,
         val inclusive: Boolean = false,
     ) : NavigationIntent
 }

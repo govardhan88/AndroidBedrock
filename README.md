@@ -97,7 +97,29 @@ Injected automatically into the build via `ORG_GRADLE_PROJECT_` prefix or CLI fl
 
 ---
 
-## 🧭 3. Navigation & Multibindings Architecture
+## 🧭 3. Type-Safe Navigation & Multibindings Architecture (`:core:navigation`)
+
+The template completely eliminates fragile raw string literals (e.g. `"products/123"`) by utilizing **Jetpack Compose Type-Safe Navigation** powered by `kotlinx.serialization`:
+
+### Type-Safe Route Contracts (`AppRoute`)
+All screen destinations and their typed arguments are declared centrally in `:core:navigation`:
+
+```kotlin
+@Serializable
+sealed interface AppRoute {
+    @Serializable
+    data object Users : AppRoute
+
+    @Serializable
+    data object Products : AppRoute
+
+    @Serializable
+    data class ProductDetail(val productId: String) : AppRoute
+
+    @Serializable
+    data object Settings : AppRoute
+}
+```
 
 ### `AppNavigator` Channel
 Navigation events are dispatched via an asynchronous Kotlin `Channel` / `Flow` decoupled from Android UI classes:
@@ -105,19 +127,24 @@ Navigation events are dispatched via an asynchronous Kotlin `Channel` / `Flow` d
 ```kotlin
 interface AppNavigator {
     val navigationChannel: Flow<NavigationIntent>
-    fun navigateTo(route: String, popUpToRoute: String? = null, inclusive: Boolean = false, isSingleTop: Boolean = true)
+
+    // 100% type-safe compile-time navigation with autocomplete
+    fun navigateTo(route: Any, popUpToRoute: Any? = null, inclusive: Boolean = false, isSingleTop: Boolean = true)
     fun navigateBack()
-    fun popTo(route: String, inclusive: Boolean = false)
+    fun popTo(route: Any, inclusive: Boolean = false)
 }
 ```
 
 ### Multibound `FeatureEntry`
-Feature presentation modules register their Jetpack Compose routes into Dagger Hilt's multibinding Set:
+Feature presentation modules register their Jetpack Compose routes using the typed route contract:
 
 ```kotlin
-interface FeatureEntry {
-    val featureRoute: String
-    fun registerRoute(navGraphBuilder: NavGraphBuilder, navController: NavHostController)
+class UsersFeatureEntryImpl @Inject constructor() : FeatureEntry {
+    override fun registerRoute(navGraphBuilder: NavGraphBuilder, navController: NavHostController) {
+        navGraphBuilder.composable<AppRoute.Users> {
+            UsersScreen()
+        }
+    }
 }
 ```
 

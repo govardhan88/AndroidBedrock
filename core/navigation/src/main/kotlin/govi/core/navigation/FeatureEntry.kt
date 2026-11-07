@@ -5,6 +5,7 @@ import androidx.navigation.NavHostController
 
 interface FeatureEntry {
     val featureRoute: String
+        get() = ""
 
     fun registerRoute(
         navGraphBuilder: NavGraphBuilder,

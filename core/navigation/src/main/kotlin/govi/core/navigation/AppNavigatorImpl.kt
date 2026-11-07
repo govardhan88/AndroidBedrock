@@ -15,8 +15,8 @@ class AppNavigatorImpl
         override val navigationChannel: Flow<NavigationIntent> = channel.receiveAsFlow()
 
         override fun navigateTo(
-            route: String,
-            popUpToRoute: String?,
+            route: Any,
+            popUpToRoute: Any?,
             inclusive: Boolean,
             isSingleTop: Boolean,
         ) {
@@ -28,7 +28,7 @@ class AppNavigatorImpl
         }
 
         override fun popTo(
-            route: String,
+            route: Any,
             inclusive: Boolean,
         ) {
             channel.trySend(NavigationIntent.PopTo(route, inclusive))

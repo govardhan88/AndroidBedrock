@@ -167,6 +167,25 @@ abstract class CreateFeatureTask : DefaultTask() {
             writeText(PresentationTemplates.navigationModule(featureName, className))
         }
 
+        // Register route in core:navigation AppRoute.kt
+        val appRouteFile = File(rootDir, "core/navigation/src/main/kotlin/govi/core/navigation/route/AppRoute.kt")
+        if (appRouteFile.exists()) {
+            var appRouteContent = appRouteFile.readText()
+            val routeDeclaration = "data object $className : AppRoute"
+            if (!appRouteContent.contains(routeDeclaration)) {
+                val lastBraceIndex = appRouteContent.lastIndexOf('}')
+                if (lastBraceIndex != -1) {
+                    val codeToInsert = "    @Serializable\n    data object $className : AppRoute\n"
+                    appRouteContent =
+                        appRouteContent.substring(0, lastBraceIndex) +
+                        codeToInsert +
+                        appRouteContent.substring(lastBraceIndex)
+                    appRouteFile.writeText(appRouteContent)
+                    println("✓ Registered type-safe destination AppRoute.$className in AppRoute.kt")
+                }
+            }
+        }
+
         // Update settings.gradle.kts
         val settingsFile = File(rootDir, "settings.gradle.kts")
         val settingsContent = settingsFile.readText()

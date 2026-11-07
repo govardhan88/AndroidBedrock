@@ -6,8 +6,8 @@ interface AppNavigator {
     val navigationChannel: Flow<NavigationIntent>
 
     fun navigateTo(
-        route: String,
-        popUpToRoute: String? = null,
+        route: Any,
+        popUpToRoute: Any? = null,
         inclusive: Boolean = false,
         isSingleTop: Boolean = true,
     )
@@ -15,7 +15,7 @@ interface AppNavigator {
     fun navigateBack()
 
     fun popTo(
-        route: String,
+        route: Any,
         inclusive: Boolean = false,
     )
 }
