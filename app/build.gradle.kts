@@ -82,6 +82,8 @@ android {
 }
 
 dependencies {
+    // Feature settings (compact)
+    implementation(project(":feature:settings"))
     // Feature fixture
     implementation(project(":feature:fixture:presentation"))
     implementation(project(":feature:fixture:data"))

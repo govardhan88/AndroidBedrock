@@ -6,7 +6,7 @@ A modular, production-grade Android Clean Architecture starter template powered 
 
 ## 🏛 Multi-Module Topology
 
-The repository follows Google's recommended multi-module Clean Architecture guidelines, strictly enforcing unidirectional dependencies and layer isolation:
+The repository follows Google's recommended multi-module Clean Architecture guidelines, strictly enforcing unidirectional dependencies and layer isolation while supporting both **divided** (3 submodules) and **compact** (single module) features within the same application:
 
 ```
 ├── app/                                # Application entry point (Hilt root, Navigation host)
@@ -14,14 +14,21 @@ The repository follows Google's recommended multi-module Clean Architecture guid
 │   └── convention/                     # Reusable Gradle plugins
 ├── core/
 │   ├── navigation/                     # AppNavigator, Navigation Channel, FeatureEntry multibinding
-│   ├── network/                        # Retrofit, OkHttpClient, logging interceptors, NetworkResult
-│   └── ui/                             # Generic AsyncState<T> and reusable AsyncContent composable
+│   ├── network/                        # Retrofit, OkHttpClient, dynamic logging, auth interceptors
+│   └── ui/                             # Bedrock Compose Design System, tokens, components, AsyncState<T>
 └── feature/
-    ├── users/                          # Reference Feature
+    │   # 1. Divided Architecture (3 Submodules) - For Complex Core Domains
+    ├── users/                          # Reference Divided Feature
     │   ├── domain/                     # Pure Kotlin (govi.kotlin.jvm): Models, UseCases, Repositories
     │   ├── data/                       # Android Library (govi.android.library, hilt): DTOs, API, Impl
     │   └── presentation/               # Android Feature (govi.android.feature): Compose UI, ViewModel, FeatureEntry
-    └── <scaffolded_features>/...       # Features generated via ./gradlew createFeature -Pname=<feature>
+    │
+    │   # 2. Compact Architecture (Single Module) - For Lightweight / UI-centric Screens
+    └── settings/                       # Reference Compact Feature (govi.android.feature)
+        └── src/main/kotlin/govi/feature/settings/
+            ├── domain/                 # Internal UseCase and Models
+            ├── data/                   # Internal API service and Repository implementation
+            └── presentation/           # Compose Screen, ViewModel, and FeatureEntry multibinding
 ```
 
 ---
@@ -175,42 +182,77 @@ class MainActivity : ComponentActivity() {
 
 ---
 
-## ⚡ 5. Automated Feature Scaffolding Task
+## ⚡ 5. Automated Feature Scaffolding Task (`createFeature`)
 
-To scaffold a complete Clean Architecture feature module hierarchy in seconds, execute:
+The template provides a unified scaffolding Gradle task supporting both **Divided** (3 submodules) and **Compact** (single module) Clean Architecture feature patterns:
 
-```bash
-./gradlew createFeature -Pname=<feature_name>
-```
+| Feature Type | Gradle Command | When to Use | Generated Structure |
+|---|---|---|---|
+| **Divided** *(Default)* | `./gradlew createFeature -Pname=<name>` | Complex business logic, checkout, payments, large domain entities | 3 submodules: `:domain`, `:data`, `:presentation` |
+| **Compact** | `./gradlew createFeature -Pname=<name> -Ptype=compact` | Lightweight features, settings, profile, static/CRUD screens | 1 module: `:feature:<name>` with internal `domain/`, `data/`, `presentation/` packages |
 
-### Example:
+---
+
+### Option A: Divided Feature Mode (Default)
+
 ```bash
 ./gradlew createFeature -Pname=orders
 ```
 
-### Automated Actions Executed:
-1. **Generates `:domain` submodule**:
+#### Automated Actions Executed:
+1. **Generates `:feature:orders:domain` submodule**:
    - `OrdersItem.kt` (domain model)
    - `OrdersRepository.kt` (repository interface)
    - `GetOrdersItemsUseCase.kt` (domain use case)
-   - `build.gradle.kts` with `govi.kotlin.jvm`
-2. **Generates `:data` submodule**:
+   - `build.gradle.kts` with `govi.kotlin.jvm` (pure Kotlin JVM, zero Android dependencies)
+2. **Generates `:feature:orders:data` submodule**:
    - `OrdersDto.kt` (kotlinx.serialization `@Serializable` DTO with `.toDomain()` mapper)
    - `OrdersApiService.kt` (Retrofit service)
    - `OrdersRepositoryImpl.kt` (repository implementation using `safeApiCall`)
    - `OrdersDataModule.kt` (Hilt dependency injection module)
    - `build.gradle.kts` with `govi.android.library` and `govi.android.hilt`
-3. **Generates `:presentation` submodule**:
-   - `OrdersUiState.kt` (State holder leveraging `AsyncState<List<OrdersItem>>`)
-   - `OrdersViewModel.kt` (@HiltViewModel with state flow & lifecycle management)
-   - `OrdersScreen.kt` (Material3 Composable UI utilizing `AsyncContent`, LazyColumn, and `@Preview`)
+3. **Generates `:feature:orders:presentation` submodule**:
+   - `OrdersUiState.kt` (state holder leveraging `AsyncState<List<OrdersItem>>`)
+   - `OrdersViewModel.kt` (`@HiltViewModel` with state flow and lifecycle handling)
+   - `OrdersScreen.kt` (Material 3 Compose UI utilizing `AsyncContent`, skeleton shimmer loading, LazyColumn, and `@Preview`)
    - `OrdersFeatureEntryImpl.kt` (`FeatureEntry` multibinding implementation)
    - `OrdersNavigationModule.kt` (Hilt `@IntoSet` multibinding module)
    - `build.gradle.kts` with `govi.android.feature`
-4. **Updates `settings.gradle.kts`**:
-   - Appends `include(":feature:<name>:domain")`, `include(":feature:<name>:data")`, `include(":feature:<name>:presentation")`
-5. **Updates `app/build.gradle.kts`**:
-   - Automatically injects `:presentation` and `:data` dependencies into the `dependencies { ... }` block.
+4. **Registers in `settings.gradle.kts`**:
+   - Appends `include(":feature:orders:domain")`, `include(":feature:orders:data")`, `include(":feature:orders:presentation")`
+5. **Wires into `app/build.gradle.kts`**:
+   - Automatically injects `:feature:orders:presentation` and `:feature:orders:data` into the app `dependencies { ... }` block.
+
+---
+
+### Option B: Compact Feature Mode (`-Ptype=compact`)
+
+```bash
+./gradlew createFeature -Pname=settings -Ptype=compact
+```
+
+#### Automated Actions Executed:
+1. **Generates single `:feature:settings` module**:
+   - `govi.android.feature` convention plugin with resource prefix (`settings_`)
+   - `domain/` package: `SettingsItem.kt`, `SettingsRepository.kt`, `GetSettingsItemsUseCase.kt`
+   - `data/` package: `SettingsDto.kt`, `SettingsApiService.kt`, `SettingsRepositoryImpl.kt`, `SettingsDataModule.kt`
+   - `presentation/` package: `SettingsUiState.kt`, `SettingsViewModel.kt`, `SettingsScreen.kt`, `SettingsFeatureEntryImpl.kt`, `SettingsNavigationModule.kt`
+2. **Registers in `settings.gradle.kts`**:
+   - Appends `include(":feature:settings")`
+3. **Wires into `app/build.gradle.kts`**:
+   - Injects `implementation(project(":feature:settings"))` into `app/build.gradle.kts`.
+
+---
+
+### Seamless Coexistence via `FeatureEntry`
+
+Regardless of whether a feature was generated as **Divided** or **Compact**, both expose the identical contract:
+```kotlin
+// Both register their Jetpack Compose routes into Dagger Hilt's Set<FeatureEntry>
+class OrdersFeatureEntryImpl @Inject constructor() : FeatureEntry { ... }
+class SettingsFeatureEntryImpl @Inject constructor() : FeatureEntry { ... }
+```
+The `:app` module simply injects `Set<FeatureEntry>` and registers all routes into `NavHost`. Developers can choose divided or compact on a feature-by-feature basis without refactoring app navigation or build logic.
 
 ---
 

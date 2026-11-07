@@ -39,3 +39,6 @@ include(":feature:products:presentation")
 include(":feature:fixture:domain")
 include(":feature:fixture:data")
 include(":feature:fixture:presentation")
+
+// Feature: settings (compact)
+include(":feature:settings")
