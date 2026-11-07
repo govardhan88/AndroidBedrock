@@ -34,5 +34,9 @@ gradlePlugin {
             id = "govi.kotlin.jvm"
             implementationClass = "govi.buildlogic.convention.KotlinJvmConventionPlugin"
         }
+        register("scaffolding") {
+            id = "govi.scaffolding"
+            implementationClass = "govi.buildlogic.scaffolding.ScaffoldingPlugin"
+        }
     }
 }

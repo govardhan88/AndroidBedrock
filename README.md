@@ -44,6 +44,7 @@ All build logic is centralized in the `build-logic` composite build using Gradle
 | `govi.android.hilt` | `AndroidHiltConventionPlugin` | Configures Dagger Hilt with KSP annotation processing |
 | `govi.android.feature` | `AndroidFeatureConventionPlugin` | Aggregates `library`, `compose`, `hilt`, and `:core:navigation` dependencies |
 | `govi.kotlin.jvm` | `KotlinJvmConventionPlugin` | Pure Kotlin/JVM module setup for clean domain modules (zero Android dependencies) |
+| `govi.scaffolding` | `ScaffoldingPlugin` | Modular scaffolding system in `build-logic` powering `createFeature` and code generation |
 
 ### Compose Compiler Metrics & Reports
 
@@ -253,6 +254,29 @@ class OrdersFeatureEntryImpl @Inject constructor() : FeatureEntry { ... }
 class SettingsFeatureEntryImpl @Inject constructor() : FeatureEntry { ... }
 ```
 The `:app` module simply injects `Set<FeatureEntry>` and registers all routes into `NavHost`. Developers can choose divided or compact on a feature-by-feature basis without refactoring app navigation or build logic.
+
+---
+
+### Extensible Scaffolding Architecture (`build-logic`)
+
+All code generation and scaffolding logic is decoupled from the root `build.gradle.kts` (reducing it from 704 lines down to **43 lines**) and modularized into dedicated components under `build-logic/convention/`:
+
+```
+build-logic/convention/src/main/kotlin/govi/buildlogic/scaffolding/
+├── ScaffoldingPlugin.kt              # Plugin registering createFeature (and future generator tasks)
+├── CreateFeatureTask.kt              # Task orchestrating feature directory generation & project wiring
+└── templates/
+    ├── BuildScriptTemplates.kt       # Gradle build script templates (compact, domain, data, presentation)
+    ├── DomainTemplates.kt            # Domain Model, Repository, and UseCase templates
+    ├── DataTemplates.kt              # Retrofit DTO, ApiService, RepositoryImpl, and DataModule templates
+    └── PresentationTemplates.kt      # UiState, ViewModel, Compose Screen, FeatureEntry, and DiModule templates
+```
+
+**Adding Future Generators**:
+To add new scaffolding tasks (such as `createUseCase`, `createRepository`, or `createDemoApp`):
+1. Create a new task class in `govi/buildlogic/scaffolding/`
+2. Add corresponding template generators under `govi/buildlogic/scaffolding/templates/`
+3. Register the task in [`ScaffoldingPlugin.kt`](file:///Users/tejendranathreddy/AndroidStudioProjects/clean-architecture-template/build-logic/convention/src/main/kotlin/govi/buildlogic/scaffolding/ScaffoldingPlugin.kt).
 
 ---
 
