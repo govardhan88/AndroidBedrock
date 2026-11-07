@@ -1,5 +1,5 @@
-import java.util.Properties
 import java.io.FileInputStream
+import java.util.Properties
 
 plugins {
     alias(libs.plugins.android.application)
@@ -13,7 +13,10 @@ plugins {
 // 2. System Environment Variables (e.g. from GitHub Actions / Docker)
 // 3. local.properties (Local developer machine overrides)
 // 4. Default fallback value
-fun resolveConfigProperty(key: String, default: String): String {
+fun resolveConfigProperty(
+    key: String,
+    default: String,
+): String {
     val fromGradle = providers.gradleProperty(key).orNull?.trim()
     if (!fromGradle.isNullOrEmpty()) return fromGradle
 
@@ -58,15 +61,16 @@ android {
             buildConfigField("String", "BASE_URL", "\"$devUrl\"")
         }
         release {
-            val prodUrl = resolveConfigProperty(
-                "PROD_BASE_URL",
-                resolveConfigProperty("BASE_URL", "https://api.example.com/")
-            )
+            val prodUrl =
+                resolveConfigProperty(
+                    "PROD_BASE_URL",
+                    resolveConfigProperty("BASE_URL", "https://api.example.com/"),
+                )
             buildConfigField("String", "BASE_URL", "\"$prodUrl\"")
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
             )
         }
     }

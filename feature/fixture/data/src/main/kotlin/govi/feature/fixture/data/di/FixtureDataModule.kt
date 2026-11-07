@@ -14,18 +14,13 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class FixtureDataModule {
-
     @Binds
     @Singleton
-    abstract fun bindFixtureRepository(
-        impl: FixtureRepositoryImpl
-    ): FixtureRepository
+    abstract fun bindFixtureRepository(impl: FixtureRepositoryImpl): FixtureRepository
 
     companion object {
         @Provides
         @Singleton
-        fun provideFixtureApiService(retrofit: Retrofit): FixtureApiService {
-            return retrofit.create(FixtureApiService::class.java)
-        }
+        fun provideFixtureApiService(retrofit: Retrofit): FixtureApiService = retrofit.create(FixtureApiService::class.java)
     }
 }

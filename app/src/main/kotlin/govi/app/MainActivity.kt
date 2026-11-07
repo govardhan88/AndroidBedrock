@@ -19,7 +19,6 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-
     @Inject
     lateinit var appNavigator: AppNavigator
 
@@ -57,7 +56,7 @@ class MainActivity : ComponentActivity() {
 
                     NavHost(
                         navController = navController,
-                        startDestination = "users"
+                        startDestination = "users",
                     ) {
                         featureEntries.forEach { entry ->
                             entry.registerRoute(this, navController)

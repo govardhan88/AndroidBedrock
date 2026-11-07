@@ -6,13 +6,13 @@ import kotlinx.coroutines.flow.receiveAsFlow
 
 data class SnackbarAction(
     val name: String,
-    val action: () -> Unit
+    val action: () -> Unit,
 )
 
 data class SnackbarEvent(
     val message: String,
     val action: SnackbarAction? = null,
-    val duration: SnackbarDuration = SnackbarDuration.Short
+    val duration: SnackbarDuration = SnackbarDuration.Short,
 )
 
 /**

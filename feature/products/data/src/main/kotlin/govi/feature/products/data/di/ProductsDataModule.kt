@@ -14,18 +14,13 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class ProductsDataModule {
-
     @Binds
     @Singleton
-    abstract fun bindProductsRepository(
-        impl: ProductsRepositoryImpl
-    ): ProductsRepository
+    abstract fun bindProductsRepository(impl: ProductsRepositoryImpl): ProductsRepository
 
     companion object {
         @Provides
         @Singleton
-        fun provideProductsApiService(retrofit: Retrofit): ProductsApiService {
-            return retrofit.create(ProductsApiService::class.java)
-        }
+        fun provideProductsApiService(retrofit: Retrofit): ProductsApiService = retrofit.create(ProductsApiService::class.java)
     }
 }

@@ -26,18 +26,20 @@ interface NetworkLoggingConfig {
      * to prevent credential and PII leakage.
      */
     val redactedHeaders: Set<String>
-        get() = setOf(
-            "Authorization",
-            "Cookie",
-            "Set-Cookie",
-            "X-Api-Key",
-            "Proxy-Authorization",
-            "Token"
-        )
+        get() =
+            setOf(
+                "Authorization",
+                "Cookie",
+                "Set-Cookie",
+                "X-Api-Key",
+                "Proxy-Authorization",
+                "Token",
+            )
 
     companion object {
-        val Default = object : NetworkLoggingConfig {
-            override val isDebug: Boolean = false
-        }
+        val Default =
+            object : NetworkLoggingConfig {
+                override val isDebug: Boolean = false
+            }
     }
 }

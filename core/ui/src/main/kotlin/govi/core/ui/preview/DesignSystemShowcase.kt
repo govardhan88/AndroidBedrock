@@ -54,15 +54,16 @@ fun DesignSystemShowcase() {
     Scaffold(
         topBar = {
             AppTopBar(title = "Design System Showcase")
-        }
+        },
     ) { innerPadding ->
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .verticalScroll(rememberScrollState())
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(24.dp)
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+                    .verticalScroll(rememberScrollState())
+                    .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(24.dp),
         ) {
             // 1. Buttons
             ShowcaseSection(title = "Buttons") {
@@ -79,7 +80,8 @@ fun DesignSystemShowcase() {
             ShowcaseSection(title = "Input Fields") {
                 AppSearchField(query = searchQuery, onQueryChange = { searchQuery = it }, modifier = Modifier.fillMaxWidth())
                 AppTextField(value = textValue, onValueChange = { textValue = it }, label = "Full Name", modifier = Modifier.fillMaxWidth())
-                AppTextField(value = "bad@", onValueChange = {}, label = "Email", isError = true, errorMessage = "Invalid email address format", modifier = Modifier.fillMaxWidth())
+                AppTextField(value = "bad@", onValueChange = {
+                }, label = "Email", isError = true, errorMessage = "Invalid email address format", modifier = Modifier.fillMaxWidth())
                 AppPasswordTextField(value = passwordValue, onValueChange = { passwordValue = it }, modifier = Modifier.fillMaxWidth())
             }
 
@@ -110,7 +112,7 @@ fun DesignSystemShowcase() {
                         headline = "Alice Johnson",
                         supportingText = "Lead Android Architect",
                         leadingContent = { androidx.compose.material3.Icon(Icons.Default.Person, contentDescription = null) },
-                        onClick = {}
+                        onClick = {},
                     )
                 }
             }
@@ -133,7 +135,7 @@ fun DesignSystemShowcase() {
                     message = "Are you sure you want to proceed with this operation?",
                     confirmLabel = "Confirm",
                     onConfirm = { showDialog = false },
-                    onDismiss = { showDialog = false }
+                    onDismiss = { showDialog = false },
                 )
             }
         }
@@ -143,13 +145,13 @@ fun DesignSystemShowcase() {
 @Composable
 private fun ShowcaseSection(
     title: String,
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Text(
             text = title,
             style = MaterialTheme.typography.titleLarge,
-            color = MaterialTheme.colorScheme.primary
+            color = MaterialTheme.colorScheme.primary,
         )
         content()
     }

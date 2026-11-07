@@ -7,9 +7,17 @@ package govi.core.ui
  */
 sealed interface AsyncState<out T> {
     data object Idle : AsyncState<Nothing>
+
     data object Loading : AsyncState<Nothing>
-    data class Success<out T>(val data: T) : AsyncState<T>
-    data class Error(val message: String, val throwable: Throwable? = null) : AsyncState<Nothing>
+
+    data class Success<out T>(
+        val data: T,
+    ) : AsyncState<T>
+
+    data class Error(
+        val message: String,
+        val throwable: Throwable? = null,
+    ) : AsyncState<Nothing>
 }
 
 /**

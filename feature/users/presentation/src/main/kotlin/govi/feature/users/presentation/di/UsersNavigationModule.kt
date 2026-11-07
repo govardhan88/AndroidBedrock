@@ -11,10 +11,7 @@ import govi.feature.users.presentation.navigation.UsersFeatureEntryImpl
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class UsersNavigationModule {
-
     @Binds
     @IntoSet
-    abstract fun bindUsersFeatureEntry(
-        entry: UsersFeatureEntryImpl
-    ): FeatureEntry
+    abstract fun bindUsersFeatureEntry(entry: UsersFeatureEntryImpl): FeatureEntry
 }

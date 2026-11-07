@@ -27,13 +27,15 @@ class AndroidComposeConventionPlugin : Plugin<Project> {
             extensions.configure<ComposeCompilerGradlePluginExtension> {
                 val buildDir = layout.buildDirectory
 
-                val enableMetrics = project.findProperty("composeCompilerMetrics")?.toString()?.toBoolean()
-                    ?: project.findProperty("enableComposeCompilerMetrics")?.toString()?.toBoolean()
-                    ?: false
+                val enableMetrics =
+                    project.findProperty("composeCompilerMetrics")?.toString()?.toBoolean()
+                        ?: project.findProperty("enableComposeCompilerMetrics")?.toString()?.toBoolean()
+                        ?: false
 
-                val enableReports = project.findProperty("composeCompilerReports")?.toString()?.toBoolean()
-                    ?: project.findProperty("enableComposeCompilerReports")?.toString()?.toBoolean()
-                    ?: false
+                val enableReports =
+                    project.findProperty("composeCompilerReports")?.toString()?.toBoolean()
+                        ?: project.findProperty("enableComposeCompilerReports")?.toString()?.toBoolean()
+                        ?: false
 
                 if (enableMetrics) {
                     metricsDestination.set(buildDir.dir("compose-metrics"))

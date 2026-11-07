@@ -14,18 +14,13 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class UsersDataModule {
-
     @Binds
     @Singleton
-    abstract fun bindUserRepository(
-        impl: UserRepositoryImpl
-    ): UserRepository
+    abstract fun bindUserRepository(impl: UserRepositoryImpl): UserRepository
 
     companion object {
         @Provides
         @Singleton
-        fun provideUserApiService(retrofit: Retrofit): UserApiService {
-            return retrofit.create(UserApiService::class.java)
-        }
+        fun provideUserApiService(retrofit: Retrofit): UserApiService = retrofit.create(UserApiService::class.java)
     }
 }

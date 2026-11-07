@@ -2,8 +2,8 @@ package govi.core.network
 
 import retrofit2.Response
 
-suspend fun <T> safeApiCall(apiCall: suspend () -> Response<T>): NetworkResult<T> {
-    return try {
+suspend fun <T> safeApiCall(apiCall: suspend () -> Response<T>): NetworkResult<T> =
+    try {
         val response = apiCall()
         if (response.isSuccessful) {
             val body = response.body()
@@ -16,10 +16,9 @@ suspend fun <T> safeApiCall(apiCall: suspend () -> Response<T>): NetworkResult<T
             NetworkResult.Error(
                 code = response.code(),
                 message = response.message(),
-                errorBody = response.errorBody()?.string()
+                errorBody = response.errorBody()?.string(),
             )
         }
     } catch (e: Throwable) {
         NetworkResult.Exception(e)
     }
-}

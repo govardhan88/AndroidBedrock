@@ -11,28 +11,31 @@ import okhttp3.Response
  * add `@Headers("${AuthInterceptor.HEADER_NO_AUTH}: true")` to the Retrofit service method.
  */
 class AuthInterceptor(
-    private val authTokenProvider: AuthTokenProvider
+    private val authTokenProvider: AuthTokenProvider,
 ) : Interceptor {
-
     override fun intercept(chain: Interceptor.Chain): Response {
         val originalRequest = chain.request()
 
         // Check if the request explicitly opts out of authentication
         if (originalRequest.header(HEADER_NO_AUTH) != null) {
-            val strippedRequest = originalRequest.newBuilder()
-                .removeHeader(HEADER_NO_AUTH)
-                .build()
+            val strippedRequest =
+                originalRequest
+                    .newBuilder()
+                    .removeHeader(HEADER_NO_AUTH)
+                    .build()
             return chain.proceed(strippedRequest)
         }
 
         val token = runBlocking { authTokenProvider.getAccessToken() }
-        val authenticatedRequest = if (!token.isNullOrBlank()) {
-            originalRequest.newBuilder()
-                .header(HEADER_AUTHORIZATION, "$BEARER_PREFIX $token")
-                .build()
-        } else {
-            originalRequest
-        }
+        val authenticatedRequest =
+            if (!token.isNullOrBlank()) {
+                originalRequest
+                    .newBuilder()
+                    .header(HEADER_AUTHORIZATION, "$BEARER_PREFIX $token")
+                    .build()
+            } else {
+                originalRequest
+            }
 
         return chain.proceed(authenticatedRequest)
     }

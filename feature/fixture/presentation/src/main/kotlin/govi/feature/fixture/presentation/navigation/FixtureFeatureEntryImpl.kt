@@ -7,15 +7,17 @@ import govi.core.navigation.FeatureEntry
 import govi.feature.fixture.presentation.FixtureScreen
 import javax.inject.Inject
 
-class FixtureFeatureEntryImpl @Inject constructor() : FeatureEntry {
-    override val featureRoute: String = "fixture"
+class FixtureFeatureEntryImpl
+    @Inject
+    constructor() : FeatureEntry {
+        override val featureRoute: String = "fixture"
 
-    override fun registerRoute(
-        navGraphBuilder: NavGraphBuilder,
-        navController: NavHostController
-    ) {
-        navGraphBuilder.composable(featureRoute) {
-            FixtureScreen()
+        override fun registerRoute(
+            navGraphBuilder: NavGraphBuilder,
+            navController: NavHostController,
+        ) {
+            navGraphBuilder.composable(featureRoute) {
+                FixtureScreen()
+            }
         }
     }
-}

@@ -9,5 +9,7 @@ interface FixtureApiService {
     suspend fun getItems(): Response<List<FixtureDto>>
 
     @GET("fixture/{id}")
-    suspend fun getItemById(@Path("id") id: String): Response<FixtureDto>
+    suspend fun getItemById(
+        @Path("id") id: String,
+    ): Response<FixtureDto>
 }

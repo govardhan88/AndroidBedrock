@@ -44,7 +44,7 @@ fun AppTextField(
     showClearButton: Boolean = true,
     visualTransformation: VisualTransformation = VisualTransformation.None,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
-    keyboardActions: KeyboardActions = KeyboardActions.Default
+    keyboardActions: KeyboardActions = KeyboardActions.Default,
 ) {
     Column(modifier = modifier) {
         OutlinedTextField(
@@ -53,30 +53,32 @@ fun AppTextField(
             modifier = Modifier.fillMaxWidth(),
             label = label?.let { { Text(it) } },
             placeholder = placeholder?.let { { Text(it) } },
-            leadingIcon = leadingIcon?.let {
-                {
-                    Icon(
-                        imageVector = it,
-                        contentDescription = null,
-                        tint = if (isError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-            },
-            trailingIcon = when {
-                trailingIcon != null -> trailingIcon
-                showClearButton && value.isNotEmpty() && enabled && !readOnly -> {
+            leadingIcon =
+                leadingIcon?.let {
                     {
-                        IconButton(onClick = { onValueChange("") }) {
-                            Icon(
-                                imageVector = Icons.Default.Clear,
-                                contentDescription = "Clear text",
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
+                        Icon(
+                            imageVector = it,
+                            contentDescription = null,
+                            tint = if (isError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                },
+            trailingIcon =
+                when {
+                    trailingIcon != null -> trailingIcon
+                    showClearButton && value.isNotEmpty() && enabled && !readOnly -> {
+                        {
+                            IconButton(onClick = { onValueChange("") }) {
+                                Icon(
+                                    imageVector = Icons.Default.Clear,
+                                    contentDescription = "Clear text",
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                )
+                            }
                         }
                     }
-                }
-                else -> null
-            },
+                    else -> null
+                },
             isError = isError,
             singleLine = singleLine,
             maxLines = maxLines,
@@ -86,13 +88,14 @@ fun AppTextField(
             keyboardOptions = keyboardOptions,
             keyboardActions = keyboardActions,
             shape = MaterialTheme.shapes.medium,
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = MaterialTheme.colorScheme.primary,
-                unfocusedBorderColor = MaterialTheme.colorScheme.outline,
-                errorBorderColor = MaterialTheme.colorScheme.error,
-                focusedLabelColor = MaterialTheme.colorScheme.primary,
-                errorLabelColor = MaterialTheme.colorScheme.error
-            )
+            colors =
+                OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                    unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                    errorBorderColor = MaterialTheme.colorScheme.error,
+                    focusedLabelColor = MaterialTheme.colorScheme.primary,
+                    errorLabelColor = MaterialTheme.colorScheme.error,
+                ),
         )
 
         val supporting = if (isError && !errorMessage.isNullOrBlank()) errorMessage else helperText
@@ -101,7 +104,7 @@ fun AppTextField(
                 text = supporting,
                 style = MaterialTheme.typography.bodySmall,
                 color = if (isError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(start = 16.dp, top = 4.dp)
+                modifier = Modifier.padding(start = 16.dp, top = 4.dp),
             )
         }
     }
@@ -116,14 +119,14 @@ private fun AppTextFieldPreview() {
                 value = "user@example.com",
                 onValueChange = {},
                 label = "Email Address",
-                helperText = "We'll never share your email"
+                helperText = "We'll never share your email",
             )
             AppTextField(
                 value = "invalid-input",
                 onValueChange = {},
                 label = "Username",
                 isError = true,
-                errorMessage = "Username must be at least 3 characters"
+                errorMessage = "Username must be at least 3 characters",
             )
         }
     }

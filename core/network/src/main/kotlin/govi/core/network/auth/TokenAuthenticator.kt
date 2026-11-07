@@ -15,12 +15,14 @@ import okhttp3.Route
  * refresh requests when multiple concurrent network calls encounter 401s simultaneously.
  */
 class TokenAuthenticator(
-    private val authTokenProvider: AuthTokenProvider
+    private val authTokenProvider: AuthTokenProvider,
 ) : Authenticator {
-
     private val refreshMutex = Mutex()
 
-    override fun authenticate(route: Route?, response: Response): Request? {
+    override fun authenticate(
+        route: Route?,
+        response: Response,
+    ): Request? {
         // Prevent infinite loops if authentication repeatedly fails
         if (responseCount(response) >= MAX_RETRY_ATTEMPTS) {
             runBlocking { authTokenProvider.onAuthFailed() }
@@ -32,14 +34,18 @@ class TokenAuthenticator(
         return runBlocking {
             refreshMutex.withLock {
                 val currentToken = authTokenProvider.getAccessToken()
-                val currentBearer = if (!currentToken.isNullOrBlank()) {
-                    "${AuthInterceptor.BEARER_PREFIX} $currentToken"
-                } else null
+                val currentBearer =
+                    if (!currentToken.isNullOrBlank()) {
+                        "${AuthInterceptor.BEARER_PREFIX} $currentToken"
+                    } else {
+                        null
+                    }
 
                 // If another concurrent thread has already refreshed the token,
                 // retry immediately with the freshly acquired token
                 if (currentBearer != null && currentBearer != failedAuthorizationHeader) {
-                    return@withLock response.request.newBuilder()
+                    return@withLock response.request
+                        .newBuilder()
                         .header(AuthInterceptor.HEADER_AUTHORIZATION, currentBearer)
                         .build()
                 }
@@ -48,17 +54,17 @@ class TokenAuthenticator(
                 val refreshResult = authTokenProvider.refreshToken()
                 refreshResult.fold(
                     onSuccess = { newToken ->
-                        response.request.newBuilder()
+                        response.request
+                            .newBuilder()
                             .header(
                                 AuthInterceptor.HEADER_AUTHORIZATION,
-                                "${AuthInterceptor.BEARER_PREFIX} $newToken"
-                            )
-                            .build()
+                                "${AuthInterceptor.BEARER_PREFIX} $newToken",
+                            ).build()
                     },
                     onFailure = {
                         authTokenProvider.onAuthFailed()
                         null
-                    }
+                    },
                 )
             }
         }

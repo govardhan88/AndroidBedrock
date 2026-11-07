@@ -8,6 +8,6 @@ interface FeatureEntry {
 
     fun registerRoute(
         navGraphBuilder: NavGraphBuilder,
-        navController: NavHostController
+        navController: NavHostController,
     )
 }

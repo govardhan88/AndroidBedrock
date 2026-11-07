@@ -9,6 +9,38 @@ plugins {
     alias(libs.plugins.compose.compiler) apply false
     alias(libs.plugins.ksp) apply false
     alias(libs.plugins.hilt) apply false
+    alias(libs.plugins.spotless)
+}
+
+spotless {
+    kotlin {
+        target("**/*.kt")
+        targetExclude("**/build/**", "**/.gradle/**")
+        ktlint("1.3.1").setEditorConfigPath("$rootDir/.editorconfig")
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
+    kotlinGradle {
+        target("**/*.kts")
+        targetExclude("**/build/**", "**/.gradle/**")
+        ktlint("1.3.1").setEditorConfigPath("$rootDir/.editorconfig")
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
+}
+
+tasks.register<Exec>("installGitHooks") {
+    description = "Installs Git pre-commit hooks for auto-formatting and zero-warning policy"
+    group = "verification"
+    workingDir = rootDir
+    commandLine("git", "config", "core.hooksPath", ".githooks")
+    doLast {
+        val hookFile = file(".githooks/pre-commit")
+        if (hookFile.exists()) {
+            hookFile.setExecutable(true, false)
+        }
+        println("✓ Git pre-commit hooks successfully configured at .githooks/")
+    }
 }
 
 tasks.register("createFeature") {
@@ -16,8 +48,12 @@ tasks.register("createFeature") {
     group = "scaffolding"
 
     doLast {
-        val rawName = project.gradle.startParameter.projectProperties["name"]
-            ?: project.providers.gradleProperty("name").orNull?.takeIf { it != project.name }
+        val rawName =
+            project.gradle.startParameter.projectProperties["name"]
+                ?: project.providers
+                    .gradleProperty("name")
+                    .orNull
+                    ?.takeIf { it != project.name }
 
         if (rawName.isNullOrBlank()) {
             throw GradleException(
@@ -25,14 +61,15 @@ tasks.register("createFeature") {
                 Missing required parameter 'name'.
                 Usage: ./gradlew createFeature -Pname=<feature_name>
                 Example: ./gradlew createFeature -Pname=products
-                """.trimIndent()
+                """.trimIndent(),
             )
         }
 
         val featureName = rawName.lowercase(Locale.ROOT)
-        val className = featureName.replaceFirstChar {
-            if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString()
-        }
+        val className =
+            featureName.replaceFirstChar {
+                if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString()
+            }
 
         val featureRoot = file("feature/$featureName")
         if (featureRoot.exists()) {
@@ -66,7 +103,7 @@ tasks.register("createFeature") {
                 implementation(libs.kotlinx.coroutines.core)
                 implementation(libs.javax.inject)
             }
-            """.trimIndent() + "\n"
+            """.trimIndent() + "\n",
         )
 
         file("$domainSrcDir/model/${className}Item.kt").apply {
@@ -80,7 +117,7 @@ tasks.register("createFeature") {
                     val title: String,
                     val description: String = ""
                 )
-                """.trimIndent() + "\n"
+                """.trimIndent() + "\n",
             )
         }
 
@@ -96,7 +133,7 @@ tasks.register("createFeature") {
                     suspend fun getItems(): Result<List<${className}Item>>
                     suspend fun getItemById(id: String): Result<${className}Item>
                 }
-                """.trimIndent() + "\n"
+                """.trimIndent() + "\n",
             )
         }
 
@@ -117,7 +154,7 @@ tasks.register("createFeature") {
                         return repository.getItems()
                     }
                 }
-                """.trimIndent() + "\n"
+                """.trimIndent() + "\n",
             )
         }
 
@@ -142,7 +179,7 @@ tasks.register("createFeature") {
                 implementation(libs.okhttp.logging)
                 implementation(libs.kotlinx.coroutines.core)
             }
-            """.trimIndent() + "\n"
+            """.trimIndent() + "\n",
         )
 
         file("$dataSrcDir/remote/${className}Dto.kt").apply {
@@ -167,7 +204,7 @@ tasks.register("createFeature") {
                         description = description.orEmpty()
                     )
                 }
-                """.trimIndent() + "\n"
+                """.trimIndent() + "\n",
             )
         }
 
@@ -188,7 +225,7 @@ tasks.register("createFeature") {
                     @GET("$featureName/{id}")
                     suspend fun getItemById(@Path("id") id: String): Response<${className}Dto>
                 }
-                """.trimIndent() + "\n"
+                """.trimIndent() + "\n",
             )
         }
 
@@ -225,7 +262,7 @@ tasks.register("createFeature") {
                         }
                     }
                 }
-                """.trimIndent() + "\n"
+                """.trimIndent() + "\n",
             )
         }
 
@@ -264,7 +301,7 @@ tasks.register("createFeature") {
                         }
                     }
                 }
-                """.trimIndent() + "\n"
+                """.trimIndent() + "\n",
             )
         }
 
@@ -283,7 +320,7 @@ tasks.register("createFeature") {
                 implementation(project(":feature:$featureName:domain"))
                 implementation(project(":core:navigation"))
             }
-            """.trimIndent() + "\n"
+            """.trimIndent() + "\n",
         )
 
         file("$presentationSrcDir/${className}UiState.kt").apply {
@@ -298,7 +335,7 @@ tasks.register("createFeature") {
                 data class ${className}UiState(
                     val itemsState: AsyncState<List<${className}Item>> = AsyncState.Loading
                 )
-                """.trimIndent() + "\n"
+                """.trimIndent() + "\n",
             )
         }
 
@@ -358,7 +395,7 @@ tasks.register("createFeature") {
                         appNavigator.navigateBack()
                     }
                 }
-                """.trimIndent() + "\n"
+                """.trimIndent() + "\n",
             )
         }
 
@@ -405,7 +442,7 @@ tasks.register("createFeature") {
                     Scaffold(
                         topBar = {
                             AppTopBar(
-                                title = "${className}",
+                                title = "$className",
                                 onBackClick = viewModel::onBackClicked
                             )
                         },
@@ -440,7 +477,7 @@ tasks.register("createFeature") {
                 ) {
                     if (items.isEmpty()) {
                         EmptyStateView(
-                            title = "No ${className} Available",
+                            title = "No $className Available",
                             message = "There are currently no items to display."
                         )
                     } else {
@@ -482,7 +519,7 @@ tasks.register("createFeature") {
                         )
                     }
                 }
-                """.trimIndent() + "\n"
+                """.trimIndent() + "\n",
             )
         }
 
@@ -511,7 +548,7 @@ tasks.register("createFeature") {
                         }
                     }
                 }
-                """.trimIndent() + "\n"
+                """.trimIndent() + "\n",
             )
         }
 
@@ -539,18 +576,19 @@ tasks.register("createFeature") {
                         entry: ${className}FeatureEntryImpl
                     ): FeatureEntry
                 }
-                """.trimIndent() + "\n"
+                """.trimIndent() + "\n",
             )
         }
 
         // 4. Update settings.gradle.kts
         val settingsFile = file("settings.gradle.kts")
         val settingsContent = settingsFile.readText()
-        val modulesToAdd = listOf(
-            ":feature:$featureName:domain",
-            ":feature:$featureName:data",
-            ":feature:$featureName:presentation"
-        ).filterNot { settingsContent.contains("\"$it\"") }
+        val modulesToAdd =
+            listOf(
+                ":feature:$featureName:domain",
+                ":feature:$featureName:data",
+                ":feature:$featureName:presentation",
+            ).filterNot { settingsContent.contains("\"$it\"") }
 
         if (modulesToAdd.isNotEmpty()) {
             val appendIncludes = modulesToAdd.joinToString("\n") { "include(\"$it\")" }
@@ -568,15 +606,16 @@ tasks.register("createFeature") {
             val dependenciesIndex = appContent.indexOf("dependencies {")
             if (dependenciesIndex != -1) {
                 val insertIndex = dependenciesIndex + "dependencies {".length
-                val depsToInsert = buildString {
-                    append("\n    // Feature $featureName")
-                    if (!appContent.contains(presDep)) {
-                        append("\n    $presDep")
+                val depsToInsert =
+                    buildString {
+                        append("\n    // Feature $featureName")
+                        if (!appContent.contains(presDep)) {
+                            append("\n    $presDep")
+                        }
+                        if (!appContent.contains(dataDep)) {
+                            append("\n    $dataDep")
+                        }
                     }
-                    if (!appContent.contains(dataDep)) {
-                        append("\n    $dataDep")
-                    }
-                }
                 appContent = appContent.substring(0, insertIndex) + depsToInsert + appContent.substring(insertIndex)
                 appBuildFile.writeText(appContent)
                 println("✓ Injected :presentation and :data dependencies into app/build.gradle.kts")

@@ -30,7 +30,7 @@ import govi.feature.fixture.domain.model.FixtureItem
 @Composable
 fun FixtureScreen(
     modifier: Modifier = Modifier,
-    viewModel: FixtureViewModel = hiltViewModel()
+    viewModel: FixtureViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -38,27 +38,29 @@ fun FixtureScreen(
         topBar = {
             AppTopBar(
                 title = "Fixture",
-                onBackClick = viewModel::onBackClicked
+                onBackClick = viewModel::onBackClicked,
             )
         },
-        modifier = modifier.fillMaxSize()
+        modifier = modifier.fillMaxSize(),
     ) { innerPadding ->
         AsyncContent(
             state = uiState.itemsState,
             onRetry = viewModel::loadItems,
             loadingContent = {
                 Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                    modifier =
+                        Modifier
+                            .fillMaxSize()
+                            .padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     repeat(4) { ShimmerListItem() }
                 }
             },
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding),
         ) { items ->
             FixtureListContent(items = items)
         }
@@ -68,31 +70,31 @@ fun FixtureScreen(
 @Composable
 fun FixtureListContent(
     items: List<FixtureItem>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     if (items.isEmpty()) {
         EmptyStateView(
             title = "No Fixture Available",
-            message = "There are currently no items to display."
+            message = "There are currently no items to display.",
         )
     } else {
         LazyColumn(
             modifier = modifier.fillMaxSize(),
             contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             items(items, key = { it.id }) { item ->
                 Card(modifier = Modifier.fillMaxWidth()) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Text(
                             text = item.title,
-                            style = MaterialTheme.typography.titleMedium
+                            style = MaterialTheme.typography.titleMedium,
                         )
                         if (item.description.isNotEmpty()) {
                             Spacer(modifier = Modifier.height(4.dp))
                             Text(
                                 text = item.description,
-                                style = MaterialTheme.typography.bodyMedium
+                                style = MaterialTheme.typography.bodyMedium,
                             )
                         }
                     }
@@ -107,10 +109,11 @@ fun FixtureListContent(
 fun FixtureScreenPreview() {
     MaterialTheme {
         FixtureListContent(
-            items = listOf(
-                FixtureItem("1", "Sample Item 1", "Description for item 1"),
-                FixtureItem("2", "Sample Item 2", "Description for item 2")
-            )
+            items =
+                listOf(
+                    FixtureItem("1", "Sample Item 1", "Description for item 1"),
+                    FixtureItem("2", "Sample Item 2", "Description for item 2"),
+                ),
         )
     }
 }

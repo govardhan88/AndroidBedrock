@@ -9,12 +9,13 @@ data class UserDto(
     @SerialName("id") val id: String,
     @SerialName("name") val name: String,
     @SerialName("email") val email: String,
-    @SerialName("avatar") val avatar: String? = null
+    @SerialName("avatar") val avatar: String? = null,
 ) {
-    fun toDomain(): User = User(
-        id = id,
-        name = name,
-        email = email,
-        avatarUrl = avatar.orEmpty()
-    )
+    fun toDomain(): User =
+        User(
+            id = id,
+            name = name,
+            email = email,
+            avatarUrl = avatar.orEmpty(),
+        )
 }

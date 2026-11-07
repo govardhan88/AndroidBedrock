@@ -27,15 +27,15 @@ fun <T> AsyncContent(
     errorContent: @Composable BoxScope.(message: String) -> Unit = { message ->
         ErrorView(
             message = message,
-            onRetry = onRetry
+            onRetry = onRetry,
         )
     },
-    content: @Composable BoxScope.(data: T) -> Unit
+    content: @Composable BoxScope.(data: T) -> Unit,
 ) {
     Box(modifier = modifier) {
         Crossfade(
             targetState = state,
-            label = "AsyncContentCrossfade"
+            label = "AsyncContentCrossfade",
         ) { targetState ->
             when (targetState) {
                 is AsyncState.Loading -> loadingContent()
@@ -54,7 +54,7 @@ private fun AsyncContentLoadingPreview() {
         AsyncContent(
             state = AsyncState.Loading,
             onRetry = {},
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxSize(),
         ) {
             Text("Success Data")
         }
@@ -68,7 +68,7 @@ private fun AsyncContentErrorPreview() {
         AsyncContent(
             state = AsyncState.Error("Failed to fetch records. Network unavailable."),
             onRetry = {},
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxSize(),
         ) {
             Text("Success Data")
         }

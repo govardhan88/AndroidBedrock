@@ -27,7 +27,7 @@ fun AppTopBar(
     title: String,
     modifier: Modifier = Modifier,
     onBackClick: (() -> Unit)? = null,
-    actions: @Composable RowScope.() -> Unit = {}
+    actions: @Composable RowScope.() -> Unit = {},
 ) {
     TopAppBar(
         title = {
@@ -35,7 +35,7 @@ fun AppTopBar(
                 text = title,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                style = MaterialTheme.typography.titleLarge
+                style = MaterialTheme.typography.titleLarge,
             )
         },
         modifier = modifier,
@@ -44,18 +44,19 @@ fun AppTopBar(
                 IconButton(onClick = onBackClick) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Back"
+                        contentDescription = "Back",
                     )
                 }
             }
         },
         actions = actions,
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.surface,
-            titleContentColor = MaterialTheme.colorScheme.onSurface,
-            navigationIconContentColor = MaterialTheme.colorScheme.onSurface,
-            actionIconContentColor = MaterialTheme.colorScheme.onSurfaceVariant
-        )
+        colors =
+            TopAppBarDefaults.topAppBarColors(
+                containerColor = MaterialTheme.colorScheme.surface,
+                titleContentColor = MaterialTheme.colorScheme.onSurface,
+                navigationIconContentColor = MaterialTheme.colorScheme.onSurface,
+                actionIconContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            ),
     )
 }
 
@@ -65,7 +66,7 @@ private fun AppTopBarPreview() {
     MaterialTheme {
         AppTopBar(
             title = "User Details",
-            onBackClick = {}
+            onBackClick = {},
         )
     }
 }

@@ -14,39 +14,41 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class UsersViewModel @Inject constructor(
-    private val getUsersUseCase: GetUsersUseCase,
-    private val appNavigator: AppNavigator
-) : ViewModel() {
+class UsersViewModel
+    @Inject
+    constructor(
+        private val getUsersUseCase: GetUsersUseCase,
+        private val appNavigator: AppNavigator,
+    ) : ViewModel() {
+        private val _uiState = MutableStateFlow(UsersUiState())
+        val uiState: StateFlow<UsersUiState> = _uiState.asStateFlow()
 
-    private val _uiState = MutableStateFlow(UsersUiState())
-    val uiState: StateFlow<UsersUiState> = _uiState.asStateFlow()
+        init {
+            loadUsers()
+        }
 
-    init {
-        loadUsers()
-    }
-
-    fun loadUsers() {
-        viewModelScope.launch {
-            _uiState.update { it.copy(usersState = AsyncState.Loading) }
-            getUsersUseCase().fold(
-                onSuccess = { users ->
-                    _uiState.update { it.copy(usersState = AsyncState.Success(users)) }
-                },
-                onFailure = { error ->
-                    _uiState.update {
-                        it.copy(
-                            usersState = AsyncState.Error(
-                                error.message ?: "An unexpected error occurred"
+        fun loadUsers() {
+            viewModelScope.launch {
+                _uiState.update { it.copy(usersState = AsyncState.Loading) }
+                getUsersUseCase().fold(
+                    onSuccess = { users ->
+                        _uiState.update { it.copy(usersState = AsyncState.Success(users)) }
+                    },
+                    onFailure = { error ->
+                        _uiState.update {
+                            it.copy(
+                                usersState =
+                                    AsyncState.Error(
+                                        error.message ?: "An unexpected error occurred",
+                                    ),
                             )
-                        )
-                    }
-                }
-            )
+                        }
+                    },
+                )
+            }
+        }
+
+        fun onUserClicked(userId: String) {
+            // appNavigator.navigateTo("user_details/$userId")
         }
     }
-
-    fun onUserClicked(userId: String) {
-        // appNavigator.navigateTo("user_details/$userId")
-    }
-}

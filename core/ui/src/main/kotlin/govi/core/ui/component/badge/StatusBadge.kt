@@ -23,7 +23,7 @@ enum class StatusVariant {
     Warning,
     Error,
     Info,
-    Neutral
+    Neutral,
 }
 
 /**
@@ -34,37 +34,40 @@ fun StatusBadge(
     text: String,
     modifier: Modifier = Modifier,
     variant: StatusVariant = StatusVariant.Neutral,
-    showDot: Boolean = true
+    showDot: Boolean = true,
 ) {
-    val (backgroundColor, contentColor) = when (variant) {
-        StatusVariant.Success -> Color(0xFFE8F5E9) to Color(0xFF2E7D32)
-        StatusVariant.Warning -> Color(0xFFFFF8E1) to Color(0xFFF57F17)
-        StatusVariant.Error -> MaterialTheme.colorScheme.errorContainer to MaterialTheme.colorScheme.onErrorContainer
-        StatusVariant.Info -> MaterialTheme.colorScheme.primaryContainer to MaterialTheme.colorScheme.onPrimaryContainer
-        StatusVariant.Neutral -> MaterialTheme.colorScheme.surfaceVariant to MaterialTheme.colorScheme.onSurfaceVariant
-    }
+    val (backgroundColor, contentColor) =
+        when (variant) {
+            StatusVariant.Success -> Color(0xFFE8F5E9) to Color(0xFF2E7D32)
+            StatusVariant.Warning -> Color(0xFFFFF8E1) to Color(0xFFF57F17)
+            StatusVariant.Error -> MaterialTheme.colorScheme.errorContainer to MaterialTheme.colorScheme.onErrorContainer
+            StatusVariant.Info -> MaterialTheme.colorScheme.primaryContainer to MaterialTheme.colorScheme.onPrimaryContainer
+            StatusVariant.Neutral -> MaterialTheme.colorScheme.surfaceVariant to MaterialTheme.colorScheme.onSurfaceVariant
+        }
 
     Box(
-        modifier = modifier
-            .clip(MaterialTheme.shapes.small)
-            .background(backgroundColor)
-            .padding(horizontal = 8.dp, vertical = 4.dp),
-        contentAlignment = Alignment.Center
+        modifier =
+            modifier
+                .clip(MaterialTheme.shapes.small)
+                .background(backgroundColor)
+                .padding(horizontal = 8.dp, vertical = 4.dp),
+        contentAlignment = Alignment.Center,
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             if (showDot) {
                 Box(
-                    modifier = Modifier
-                        .size(6.dp)
-                        .clip(CircleShape)
-                        .background(contentColor)
+                    modifier =
+                        Modifier
+                            .size(6.dp)
+                            .clip(CircleShape)
+                            .background(contentColor),
                 )
                 Spacer(modifier = Modifier.width(6.dp))
             }
             Text(
                 text = text,
                 style = MaterialTheme.typography.labelMedium,
-                color = contentColor
+                color = contentColor,
             )
         }
     }

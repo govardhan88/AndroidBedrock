@@ -31,7 +31,6 @@ import androidx.compose.ui.composed
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -43,30 +42,33 @@ import govi.core.ui.theme.ShimmerLight
 /**
  * Modifier that applies an animated linear gradient shimmer placeholder to any Composable.
  */
-fun Modifier.shimmer(): Modifier = composed {
-    val isDark = isSystemInDarkTheme()
-    val baseColor = if (isDark) ShimmerDark else ShimmerLight
-    val highlightColor = if (isDark) ShimmerHighlightDark else ShimmerHighlightLight
+fun Modifier.shimmer(): Modifier =
+    composed {
+        val isDark = isSystemInDarkTheme()
+        val baseColor = if (isDark) ShimmerDark else ShimmerLight
+        val highlightColor = if (isDark) ShimmerHighlightDark else ShimmerHighlightLight
 
-    val transition = rememberInfiniteTransition(label = "ShimmerTransition")
-    val translateAnim by transition.animateFloat(
-        initialValue = 0f,
-        targetValue = 1000f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = 1200, easing = FastOutSlowInEasing),
-            repeatMode = RepeatMode.Restart
-        ),
-        label = "ShimmerTranslate"
-    )
+        val transition = rememberInfiniteTransition(label = "ShimmerTransition")
+        val translateAnim by transition.animateFloat(
+            initialValue = 0f,
+            targetValue = 1000f,
+            animationSpec =
+                infiniteRepeatable(
+                    animation = tween(durationMillis = 1200, easing = FastOutSlowInEasing),
+                    repeatMode = RepeatMode.Restart,
+                ),
+            label = "ShimmerTranslate",
+        )
 
-    val brush = Brush.linearGradient(
-        colors = listOf(baseColor, highlightColor, baseColor),
-        start = Offset(translateAnim - 400f, translateAnim - 400f),
-        end = Offset(translateAnim, translateAnim)
-    )
+        val brush =
+            Brush.linearGradient(
+                colors = listOf(baseColor, highlightColor, baseColor),
+                start = Offset(translateAnim - 400f, translateAnim - 400f),
+                end = Offset(translateAnim, translateAnim),
+            )
 
-    this.background(brush)
-}
+        this.background(brush)
+    }
 
 /**
  * Reusable placeholder box with rounded corners and animated shimmer effect.
@@ -74,12 +76,13 @@ fun Modifier.shimmer(): Modifier = composed {
 @Composable
 fun ShimmerBox(
     modifier: Modifier = Modifier,
-    shape: Shape = RoundedCornerShape(8.dp)
+    shape: Shape = RoundedCornerShape(8.dp),
 ) {
     Box(
-        modifier = modifier
-            .clip(shape)
-            .shimmer()
+        modifier =
+            modifier
+                .clip(shape)
+                .shimmer(),
     )
 }
 
@@ -87,44 +90,46 @@ fun ShimmerBox(
  * Skeleton placeholder item mimicking a standard card with avatar and text lines.
  */
 @Composable
-fun ShimmerListItem(
-    modifier: Modifier = Modifier
-) {
+fun ShimmerListItem(modifier: Modifier = Modifier) {
     Card(
         modifier = modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
-        )
+        colors =
+            CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surface,
+            ),
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             ShimmerBox(
                 modifier = Modifier.size(48.dp),
-                shape = CircleShape
+                shape = CircleShape,
             )
 
             Spacer(modifier = Modifier.width(16.dp))
 
             Column(
                 modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.Center
+                verticalArrangement = Arrangement.Center,
             ) {
                 ShimmerBox(
-                    modifier = Modifier
-                        .fillMaxWidth(0.6f)
-                        .height(16.dp)
+                    modifier =
+                        Modifier
+                            .fillMaxWidth(0.6f)
+                            .height(16.dp),
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
 
                 ShimmerBox(
-                    modifier = Modifier
-                        .fillMaxWidth(0.9f)
-                        .height(12.dp)
+                    modifier =
+                        Modifier
+                            .fillMaxWidth(0.9f)
+                            .height(12.dp),
                 )
             }
         }
@@ -137,7 +142,7 @@ private fun ShimmerListItemPreview() {
     MaterialTheme {
         Column(
             modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+            verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             ShimmerListItem()
             ShimmerListItem()

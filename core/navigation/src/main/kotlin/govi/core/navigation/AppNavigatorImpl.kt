@@ -7,26 +7,30 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class AppNavigatorImpl @Inject constructor() : AppNavigator {
+class AppNavigatorImpl
+    @Inject
+    constructor() : AppNavigator {
+        private val channel = Channel<NavigationIntent>(Channel.BUFFERED)
 
-    private val channel = Channel<NavigationIntent>(Channel.BUFFERED)
+        override val navigationChannel: Flow<NavigationIntent> = channel.receiveAsFlow()
 
-    override val navigationChannel: Flow<NavigationIntent> = channel.receiveAsFlow()
+        override fun navigateTo(
+            route: String,
+            popUpToRoute: String?,
+            inclusive: Boolean,
+            isSingleTop: Boolean,
+        ) {
+            channel.trySend(NavigationIntent.NavigateTo(route, popUpToRoute, inclusive, isSingleTop))
+        }
 
-    override fun navigateTo(
-        route: String,
-        popUpToRoute: String?,
-        inclusive: Boolean,
-        isSingleTop: Boolean
-    ) {
-        channel.trySend(NavigationIntent.NavigateTo(route, popUpToRoute, inclusive, isSingleTop))
+        override fun navigateBack() {
+            channel.trySend(NavigationIntent.NavigateBack)
+        }
+
+        override fun popTo(
+            route: String,
+            inclusive: Boolean,
+        ) {
+            channel.trySend(NavigationIntent.PopTo(route, inclusive))
+        }
     }
-
-    override fun navigateBack() {
-        channel.trySend(NavigationIntent.NavigateBack)
-    }
-
-    override fun popTo(route: String, inclusive: Boolean) {
-        channel.trySend(NavigationIntent.PopTo(route, inclusive))
-    }
-}

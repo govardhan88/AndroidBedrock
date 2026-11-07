@@ -33,32 +33,32 @@ fun PrimaryButton(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     isLoading: Boolean = false,
-    leadingIcon: ImageVector? = null
+    leadingIcon: ImageVector? = null,
 ) {
     Button(
         onClick = onClick,
         modifier = modifier.height(48.dp),
         enabled = enabled && !isLoading,
-        shape = MaterialTheme.shapes.medium
+        shape = MaterialTheme.shapes.medium,
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             if (isLoading) {
                 InlineLoadingIndicator(
                     size = 18.dp,
-                    color = MaterialTheme.colorScheme.onPrimary
+                    color = MaterialTheme.colorScheme.onPrimary,
                 )
                 Spacer(modifier = Modifier.width(8.dp))
             } else if (leadingIcon != null) {
                 Icon(
                     imageVector = leadingIcon,
                     contentDescription = null,
-                    modifier = Modifier.size(18.dp)
+                    modifier = Modifier.size(18.dp),
                 )
                 Spacer(modifier = Modifier.width(8.dp))
             }
             Text(
                 text = text,
-                style = MaterialTheme.typography.labelLarge
+                style = MaterialTheme.typography.labelLarge,
             )
         }
     }
@@ -74,32 +74,32 @@ fun SecondaryButton(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     isLoading: Boolean = false,
-    leadingIcon: ImageVector? = null
+    leadingIcon: ImageVector? = null,
 ) {
     FilledTonalButton(
         onClick = onClick,
         modifier = modifier.height(48.dp),
         enabled = enabled && !isLoading,
-        shape = MaterialTheme.shapes.medium
+        shape = MaterialTheme.shapes.medium,
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             if (isLoading) {
                 InlineLoadingIndicator(
                     size = 18.dp,
-                    color = MaterialTheme.colorScheme.onSecondaryContainer
+                    color = MaterialTheme.colorScheme.onSecondaryContainer,
                 )
                 Spacer(modifier = Modifier.width(8.dp))
             } else if (leadingIcon != null) {
                 Icon(
                     imageVector = leadingIcon,
                     contentDescription = null,
-                    modifier = Modifier.size(18.dp)
+                    modifier = Modifier.size(18.dp),
                 )
                 Spacer(modifier = Modifier.width(8.dp))
             }
             Text(
                 text = text,
-                style = MaterialTheme.typography.labelLarge
+                style = MaterialTheme.typography.labelLarge,
             )
         }
     }
@@ -115,32 +115,32 @@ fun AppOutlinedButton(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     isLoading: Boolean = false,
-    leadingIcon: ImageVector? = null
+    leadingIcon: ImageVector? = null,
 ) {
     OutlinedButton(
         onClick = onClick,
         modifier = modifier.height(48.dp),
         enabled = enabled && !isLoading,
-        shape = MaterialTheme.shapes.medium
+        shape = MaterialTheme.shapes.medium,
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             if (isLoading) {
                 InlineLoadingIndicator(
                     size = 18.dp,
-                    color = MaterialTheme.colorScheme.primary
+                    color = MaterialTheme.colorScheme.primary,
                 )
                 Spacer(modifier = Modifier.width(8.dp))
             } else if (leadingIcon != null) {
                 Icon(
                     imageVector = leadingIcon,
                     contentDescription = null,
-                    modifier = Modifier.size(18.dp)
+                    modifier = Modifier.size(18.dp),
                 )
                 Spacer(modifier = Modifier.width(8.dp))
             }
             Text(
                 text = text,
-                style = MaterialTheme.typography.labelLarge
+                style = MaterialTheme.typography.labelLarge,
             )
         }
     }
@@ -155,25 +155,25 @@ fun AppTextButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    leadingIcon: ImageVector? = null
+    leadingIcon: ImageVector? = null,
 ) {
     androidx.compose.material3.TextButton(
         onClick = onClick,
         modifier = modifier,
-        enabled = enabled
+        enabled = enabled,
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             if (leadingIcon != null) {
                 Icon(
                     imageVector = leadingIcon,
                     contentDescription = null,
-                    modifier = Modifier.size(18.dp)
+                    modifier = Modifier.size(18.dp),
                 )
                 Spacer(modifier = Modifier.width(8.dp))
             }
             Text(
                 text = text,
-                style = MaterialTheme.typography.labelLarge
+                style = MaterialTheme.typography.labelLarge,
             )
         }
     }
@@ -189,17 +189,17 @@ fun AppIconButton(
     contentDescription: String?,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    tint: androidx.compose.ui.graphics.Color = MaterialTheme.colorScheme.onSurfaceVariant
+    tint: androidx.compose.ui.graphics.Color = MaterialTheme.colorScheme.onSurfaceVariant,
 ) {
     androidx.compose.material3.IconButton(
         onClick = onClick,
         modifier = modifier,
-        enabled = enabled
+        enabled = enabled,
     ) {
         Icon(
             imageVector = icon,
             contentDescription = contentDescription,
-            tint = if (enabled) tint else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
+            tint = if (enabled) tint else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f),
         )
     }
 }
@@ -209,10 +209,11 @@ fun AppIconButton(
 private fun ButtonsPreview() {
     MaterialTheme {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             PrimaryButton(text = "Submit Order", onClick = {}, modifier = Modifier.fillMaxWidth())
             PrimaryButton(text = "Submitting...", onClick = {}, isLoading = true, modifier = Modifier.fillMaxWidth())

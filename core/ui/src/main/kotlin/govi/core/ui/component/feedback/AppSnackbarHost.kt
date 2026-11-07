@@ -21,13 +21,13 @@ fun AppSnackbarHost(
             shape = MaterialTheme.shapes.medium,
             containerColor = MaterialTheme.colorScheme.inverseSurface,
             contentColor = MaterialTheme.colorScheme.inverseOnSurface,
-            actionColor = MaterialTheme.colorScheme.inversePrimary
+            actionColor = MaterialTheme.colorScheme.inversePrimary,
         )
-    }
+    },
 ) {
     SnackbarHost(
         hostState = hostState,
         modifier = modifier,
-        snackbar = snackbar
+        snackbar = snackbar,
     )
 }

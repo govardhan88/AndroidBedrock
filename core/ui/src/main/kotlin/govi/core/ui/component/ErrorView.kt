@@ -31,23 +31,24 @@ fun ErrorView(
     modifier: Modifier = Modifier,
     title: String = "Something went wrong",
     retryLabel: String = "Retry",
-    onRetry: (() -> Unit)? = null
+    onRetry: (() -> Unit)? = null,
 ) {
     Box(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(24.dp),
-        contentAlignment = Alignment.Center
+        modifier =
+            modifier
+                .fillMaxSize()
+                .padding(24.dp),
+        contentAlignment = Alignment.Center,
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.Center,
         ) {
             Icon(
                 imageVector = Icons.Default.Warning,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.error,
-                modifier = Modifier.size(56.dp)
+                modifier = Modifier.size(56.dp),
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -56,7 +57,7 @@ fun ErrorView(
                 text = title,
                 style = MaterialTheme.typography.titleLarge,
                 color = MaterialTheme.colorScheme.onSurface,
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
             )
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -65,16 +66,17 @@ fun ErrorView(
                 text = message,
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
             )
 
             if (onRetry != null) {
                 Spacer(modifier = Modifier.height(24.dp))
                 Button(
                     onClick = onRetry,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.error
-                    )
+                    colors =
+                        ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.error,
+                        ),
                 ) {
                     Text(text = retryLabel)
                 }
@@ -89,7 +91,7 @@ private fun ErrorViewPreview() {
     MaterialTheme {
         ErrorView(
             message = "Unable to connect to the server. Please check your network connection.",
-            onRetry = {}
+            onRetry = {},
         )
     }
 }

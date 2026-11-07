@@ -14,39 +14,41 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class FixtureViewModel @Inject constructor(
-    private val getItemsUseCase: GetFixtureItemsUseCase,
-    private val appNavigator: AppNavigator
-) : ViewModel() {
+class FixtureViewModel
+    @Inject
+    constructor(
+        private val getItemsUseCase: GetFixtureItemsUseCase,
+        private val appNavigator: AppNavigator,
+    ) : ViewModel() {
+        private val _uiState = MutableStateFlow(FixtureUiState())
+        val uiState: StateFlow<FixtureUiState> = _uiState.asStateFlow()
 
-    private val _uiState = MutableStateFlow(FixtureUiState())
-    val uiState: StateFlow<FixtureUiState> = _uiState.asStateFlow()
+        init {
+            loadItems()
+        }
 
-    init {
-        loadItems()
-    }
-
-    fun loadItems() {
-        viewModelScope.launch {
-            _uiState.update { it.copy(itemsState = AsyncState.Loading) }
-            getItemsUseCase().fold(
-                onSuccess = { items ->
-                    _uiState.update { it.copy(itemsState = AsyncState.Success(items)) }
-                },
-                onFailure = { error ->
-                    _uiState.update {
-                        it.copy(
-                            itemsState = AsyncState.Error(
-                                error.message ?: "An unexpected error occurred"
+        fun loadItems() {
+            viewModelScope.launch {
+                _uiState.update { it.copy(itemsState = AsyncState.Loading) }
+                getItemsUseCase().fold(
+                    onSuccess = { items ->
+                        _uiState.update { it.copy(itemsState = AsyncState.Success(items)) }
+                    },
+                    onFailure = { error ->
+                        _uiState.update {
+                            it.copy(
+                                itemsState =
+                                    AsyncState.Error(
+                                        error.message ?: "An unexpected error occurred",
+                                    ),
                             )
-                        )
-                    }
-                }
-            )
+                        }
+                    },
+                )
+            }
+        }
+
+        fun onBackClicked() {
+            appNavigator.navigateBack()
         }
     }
-
-    fun onBackClicked() {
-        appNavigator.navigateBack()
-    }
-}

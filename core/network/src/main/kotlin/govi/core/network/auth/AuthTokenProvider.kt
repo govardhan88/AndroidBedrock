@@ -8,7 +8,6 @@ package govi.core.network.auth
  * interceptor and authenticator with zero overhead.
  */
 interface AuthTokenProvider {
-
     /**
      * Retrieves the current cached access token, or null if unauthenticated.
      */

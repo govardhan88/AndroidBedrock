@@ -11,10 +11,7 @@ import govi.feature.products.presentation.navigation.ProductsFeatureEntryImpl
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class ProductsNavigationModule {
-
     @Binds
     @IntoSet
-    abstract fun bindProductsFeatureEntry(
-        entry: ProductsFeatureEntryImpl
-    ): FeatureEntry
+    abstract fun bindProductsFeatureEntry(entry: ProductsFeatureEntryImpl): FeatureEntry
 }

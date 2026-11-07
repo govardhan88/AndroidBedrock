@@ -16,9 +16,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 internal val Project.libs: VersionCatalog
     get() = extensions.getByType<VersionCatalogsExtension>().named("libs")
 
-internal fun Project.configureKotlinAndroid(
-    libraryExtension: LibraryExtension
-) {
+internal fun Project.configureKotlinAndroid(libraryExtension: LibraryExtension) {
     libraryExtension.apply {
         compileSdk = 37
 
@@ -50,6 +48,7 @@ internal fun Project.configureKotlinJvm() {
     tasks.withType<KotlinCompile>().configureEach {
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_21)
+            allWarningsAsErrors.set(true)
         }
     }
 }

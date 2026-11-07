@@ -9,5 +9,7 @@ interface UserApiService {
     suspend fun getUsers(): Response<List<UserDto>>
 
     @GET("users/{id}")
-    suspend fun getUserById(@Path("id") id: String): Response<UserDto>
+    suspend fun getUserById(
+        @Path("id") id: String,
+    ): Response<UserDto>
 }

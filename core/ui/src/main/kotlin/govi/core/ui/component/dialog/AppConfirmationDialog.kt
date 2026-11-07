@@ -3,13 +3,13 @@ package govi.core.ui.component.dialog
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.material3.Icon
 import androidx.compose.ui.tooling.preview.Preview
 
 /**
@@ -25,44 +25,46 @@ fun AppConfirmationDialog(
     modifier: Modifier = Modifier,
     dismissLabel: String = "Cancel",
     icon: ImageVector? = null,
-    isDestructive: Boolean = false
+    isDestructive: Boolean = false,
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
         modifier = modifier,
-        icon = icon?.let {
-            {
-                Icon(
-                    imageVector = it,
-                    contentDescription = null,
-                    tint = if (isDestructive) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
-                )
-            }
-        },
+        icon =
+            icon?.let {
+                {
+                    Icon(
+                        imageVector = it,
+                        contentDescription = null,
+                        tint = if (isDestructive) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
+                    )
+                }
+            },
         title = {
             Text(
                 text = title,
-                style = MaterialTheme.typography.titleLarge
+                style = MaterialTheme.typography.titleLarge,
             )
         },
         text = {
             Text(
                 text = message,
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         },
         confirmButton = {
             Button(
                 onClick = onConfirm,
-                colors = if (isDestructive) {
-                    ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.error,
-                        contentColor = MaterialTheme.colorScheme.onError
-                    )
-                } else {
-                    ButtonDefaults.buttonColors()
-                }
+                colors =
+                    if (isDestructive) {
+                        ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.error,
+                            contentColor = MaterialTheme.colorScheme.onError,
+                        )
+                    } else {
+                        ButtonDefaults.buttonColors()
+                    },
             ) {
                 Text(text = confirmLabel)
             }
@@ -72,7 +74,7 @@ fun AppConfirmationDialog(
                 Text(text = dismissLabel)
             }
         },
-        shape = MaterialTheme.shapes.extraLarge
+        shape = MaterialTheme.shapes.extraLarge,
     )
 }
 
@@ -86,7 +88,7 @@ private fun AppConfirmationDialogPreview() {
             confirmLabel = "Delete",
             isDestructive = true,
             onConfirm = {},
-            onDismiss = {}
+            onDismiss = {},
         )
     }
 }

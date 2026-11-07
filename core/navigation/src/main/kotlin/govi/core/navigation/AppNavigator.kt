@@ -9,13 +9,13 @@ interface AppNavigator {
         route: String,
         popUpToRoute: String? = null,
         inclusive: Boolean = false,
-        isSingleTop: Boolean = true
+        isSingleTop: Boolean = true,
     )
 
     fun navigateBack()
 
     fun popTo(
         route: String,
-        inclusive: Boolean = false
+        inclusive: Boolean = false,
     )
 }

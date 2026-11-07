@@ -1,13 +1,8 @@
 package govi.core.ui.component.card
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Person
@@ -17,7 +12,6 @@ import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
@@ -38,10 +32,10 @@ fun AppListItem(
         Icon(
             imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
             contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurfaceVariant
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
         )
     },
-    onClick: (() -> Unit)? = null
+    onClick: (() -> Unit)? = null,
 ) {
     val clickModifier = if (onClick != null) modifier.clickable(onClick = onClick) else modifier
 
@@ -51,35 +45,38 @@ fun AppListItem(
                 text = headline,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                style = MaterialTheme.typography.bodyLarge
+                style = MaterialTheme.typography.bodyLarge,
             )
         },
         modifier = clickModifier.fillMaxWidth(),
-        supportingContent = supportingText?.let {
-            {
-                Text(
-                    text = it,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-        },
-        overlineContent = overlineText?.let {
-            {
-                Text(
-                    text = it,
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-        },
+        supportingContent =
+            supportingText?.let {
+                {
+                    Text(
+                        text = it,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+            },
+        overlineContent =
+            overlineText?.let {
+                {
+                    Text(
+                        text = it,
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+            },
         leadingContent = leadingContent,
         trailingContent = trailingContent,
-        colors = ListItemDefaults.colors(
-            containerColor = Color.Transparent
-        )
+        colors =
+            ListItemDefaults.colors(
+                containerColor = Color.Transparent,
+            ),
     )
 }
 
@@ -94,10 +91,10 @@ private fun AppListItemPreview() {
                 Icon(
                     imageVector = Icons.Default.Person,
                     contentDescription = null,
-                    modifier = Modifier.size(24.dp)
+                    modifier = Modifier.size(24.dp),
                 )
             },
-            onClick = {}
+            onClick = {},
         )
     }
 }

@@ -25,7 +25,6 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 interface NetworkDeclarationModule {
-
     @BindsOptionalOf
     fun bindAuthTokenProvider(): AuthTokenProvider
 
@@ -40,34 +39,33 @@ interface NetworkDeclarationModule {
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
+    @Provides
+    @Singleton
+    fun provideJson(): Json =
+        Json {
+            ignoreUnknownKeys = true
+            isLenient = true
+            coerceInputValues = true
+            encodeDefaults = true
+            prettyPrint = false
+        }
 
     @Provides
     @Singleton
-    fun provideJson(): Json = Json {
-        ignoreUnknownKeys = true
-        isLenient = true
-        coerceInputValues = true
-        encodeDefaults = true
-        prettyPrint = false
-    }
-
-    @Provides
-    @Singleton
-    fun provideLoggingInterceptor(
-        loggingConfig: Optional<NetworkLoggingConfig>
-    ): HttpLoggingInterceptor {
+    fun provideLoggingInterceptor(loggingConfig: Optional<NetworkLoggingConfig>): HttpLoggingInterceptor {
         val config = loggingConfig.orElse(NetworkLoggingConfig.Default)
 
         // Custom chunking logger to avoid Android Logcat 4KB truncation
-        val chunkingLogger = HttpLoggingInterceptor.Logger { message ->
-            val maxLogSize = 3500
-            var i = 0
-            while (i < message.length) {
-                val end = minOf(message.length, i + maxLogSize)
-                android.util.Log.d("OkHttp", message.substring(i, end))
-                i = end
+        val chunkingLogger =
+            HttpLoggingInterceptor.Logger { message ->
+                val maxLogSize = 3500
+                var i = 0
+                while (i < message.length) {
+                    val end = minOf(message.length, i + maxLogSize)
+                    android.util.Log.d("OkHttp", message.substring(i, end))
+                    i = end
+                }
             }
-        }
 
         return HttpLoggingInterceptor(chunkingLogger).apply {
             level = config.level
@@ -81,32 +79,34 @@ object NetworkModule {
         loggingInterceptor: HttpLoggingInterceptor,
         loggingConfig: Optional<NetworkLoggingConfig>,
         authTokenProvider: Optional<AuthTokenProvider>,
-        @NetworkInterceptors customInterceptors: Set<@JvmSuppressWildcards Interceptor>
+        @NetworkInterceptors customInterceptors: Set<@JvmSuppressWildcards Interceptor>,
     ): OkHttpClient {
         val config = loggingConfig.orElse(NetworkLoggingConfig.Default)
 
-        return OkHttpClient.Builder().apply {
-            // 1. Pluggable Auth Interceptor & Authenticator (zero overhead when unbound)
-            if (authTokenProvider.isPresent) {
-                val provider = authTokenProvider.get()
-                addInterceptor(AuthInterceptor(provider))
-                authenticator(TokenAuthenticator(provider))
-            }
+        return OkHttpClient
+            .Builder()
+            .apply {
+                // 1. Pluggable Auth Interceptor & Authenticator (zero overhead when unbound)
+                if (authTokenProvider.isPresent) {
+                    val provider = authTokenProvider.get()
+                    addInterceptor(AuthInterceptor(provider))
+                    authenticator(TokenAuthenticator(provider))
+                }
 
-            // 2. Multibound custom interceptors (Chucker, Cache, Analytics, etc.)
-            customInterceptors.forEach { interceptor ->
-                addInterceptor(interceptor)
-            }
+                // 2. Multibound custom interceptors (Chucker, Cache, Analytics, etc.)
+                customInterceptors.forEach { interceptor ->
+                    addInterceptor(interceptor)
+                }
 
-            // 3. Optimized logging interceptor (only registered in debug builds)
-            if (config.isDebug) {
-                addInterceptor(loggingInterceptor)
-            }
+                // 3. Optimized logging interceptor (only registered in debug builds)
+                if (config.isDebug) {
+                    addInterceptor(loggingInterceptor)
+                }
 
-            connectTimeout(30, TimeUnit.SECONDS)
-            readTimeout(30, TimeUnit.SECONDS)
-            writeTimeout(30, TimeUnit.SECONDS)
-        }.build()
+                connectTimeout(30, TimeUnit.SECONDS)
+                readTimeout(30, TimeUnit.SECONDS)
+                writeTimeout(30, TimeUnit.SECONDS)
+            }.build()
     }
 
     @Provides
@@ -114,22 +114,23 @@ object NetworkModule {
     fun provideRetrofit(
         okHttpClient: OkHttpClient,
         json: Json,
-        baseUrlProvider: BaseUrlProvider
+        baseUrlProvider: BaseUrlProvider,
     ): Retrofit {
         val rawUrl = baseUrlProvider.getBaseUrl()
         val formattedUrl = if (rawUrl.endsWith("/")) rawUrl else "$rawUrl/"
 
         require(
-            formattedUrl.startsWith("https://")
-                    || formattedUrl.startsWith("http://localhost")
-                    || formattedUrl.startsWith("http://10.0.2.2")
+            formattedUrl.startsWith("https://") ||
+                formattedUrl.startsWith("http://localhost") ||
+                formattedUrl.startsWith("http://10.0.2.2"),
         ) {
             "Security violation: Production Base URL must use HTTPS. Cleartext HTTP is prohibited: $formattedUrl"
         }
 
         val contentType = "application/json".toMediaType()
 
-        return Retrofit.Builder()
+        return Retrofit
+            .Builder()
             .baseUrl(formattedUrl)
             .client(okHttpClient)
             .addConverterFactory(json.asConverterFactory(contentType))

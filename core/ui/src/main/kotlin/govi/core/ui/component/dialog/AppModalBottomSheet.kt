@@ -3,10 +3,8 @@ package govi.core.ui.component.dialog
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -32,7 +30,7 @@ fun AppModalBottomSheet(
     modifier: Modifier = Modifier,
     title: String? = null,
     sheetState: SheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-    content: @Composable ColumnScope.() -> Unit
+    content: @Composable ColumnScope.() -> Unit,
 ) {
     ModalBottomSheet(
         onDismissRequest = onDismissRequest,
@@ -41,31 +39,34 @@ fun AppModalBottomSheet(
         shape = MaterialTheme.shapes.extraLarge,
         containerColor = MaterialTheme.colorScheme.surface,
         dragHandle = {
-            androidx.compose.material3.BottomSheetDefaults.DragHandle()
-        }
+            androidx.compose.material3.BottomSheetDefaults
+                .DragHandle()
+        },
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 24.dp)
-                .padding(bottom = 32.dp)
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 24.dp)
+                    .padding(bottom = 32.dp),
         ) {
             if (!title.isNullOrBlank()) {
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 16.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(
                         text = title,
                         style = MaterialTheme.typography.titleLarge,
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.weight(1f),
                     )
                     IconButton(onClick = onDismissRequest) {
                         Icon(
                             imageVector = Icons.Default.Close,
-                            contentDescription = "Close sheet"
+                            contentDescription = "Close sheet",
                         )
                     }
                 }

@@ -34,7 +34,7 @@ fun AppPasswordTextField(
     errorMessage: String? = null,
     helperText: String? = null,
     enabled: Boolean = true,
-    keyboardActions: KeyboardActions = KeyboardActions.Default
+    keyboardActions: KeyboardActions = KeyboardActions.Default,
 ) {
     var isPasswordVisible by remember { mutableStateOf(false) }
 
@@ -50,7 +50,7 @@ fun AppPasswordTextField(
                 Icon(
                     imageVector = if (isPasswordVisible) Icons.Default.VisibilityOff else Icons.Default.Visibility,
                     contentDescription = if (isPasswordVisible) "Hide password" else "Show password",
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
         },
@@ -62,7 +62,7 @@ fun AppPasswordTextField(
         showClearButton = false,
         visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-        keyboardActions = keyboardActions
+        keyboardActions = keyboardActions,
     )
 }
 
@@ -72,7 +72,7 @@ private fun AppPasswordTextFieldPreview() {
     MaterialTheme {
         AppPasswordTextField(
             value = "secret123",
-            onValueChange = {}
+            onValueChange = {},
         )
     }
 }

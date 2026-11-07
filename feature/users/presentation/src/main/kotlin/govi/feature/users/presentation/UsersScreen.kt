@@ -40,7 +40,7 @@ import govi.feature.users.domain.model.User
 @Composable
 fun UsersScreen(
     modifier: Modifier = Modifier,
-    viewModel: UsersViewModel = hiltViewModel()
+    viewModel: UsersViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -48,28 +48,30 @@ fun UsersScreen(
         topBar = {
             AppTopBar(title = "Users Directory")
         },
-        modifier = modifier.fillMaxSize()
+        modifier = modifier.fillMaxSize(),
     ) { innerPadding ->
         AsyncContent(
             state = uiState.usersState,
             onRetry = viewModel::loadUsers,
             loadingContent = {
                 Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                    modifier =
+                        Modifier
+                            .fillMaxSize()
+                            .padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     repeat(5) { ShimmerListItem() }
                 }
             },
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding),
         ) { users ->
             UsersListContent(
                 users = users,
-                onUserClick = { viewModel.onUserClicked(it.id) }
+                onUserClick = { viewModel.onUserClicked(it.id) },
             )
         }
     }
@@ -79,18 +81,18 @@ fun UsersScreen(
 fun UsersListContent(
     users: List<User>,
     onUserClick: (User) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     if (users.isEmpty()) {
         EmptyStateView(
             title = "No Users Found",
-            message = "There are no users registered in the system yet."
+            message = "There are no users registered in the system yet.",
         )
     } else {
         LazyColumn(
             modifier = modifier.fillMaxSize(),
             contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             items(users, key = { it.id }) { user ->
                 UserCard(user = user, onClick = { onUserClick(user) })
@@ -103,31 +105,34 @@ fun UsersListContent(
 fun UserCard(
     user: User,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .clickable(onClick = onClick),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Box(
-                modifier = Modifier
-                    .size(48.dp)
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.primaryContainer),
-                contentAlignment = Alignment.Center
+                modifier =
+                    Modifier
+                        .size(48.dp)
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.primaryContainer),
+                contentAlignment = Alignment.Center,
             ) {
                 Text(
                     text = user.name.take(1).uppercase(),
                     style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
                 )
             }
 
@@ -136,13 +141,13 @@ fun UserCard(
             Column {
                 Text(
                     text = user.name,
-                    style = MaterialTheme.typography.titleMedium
+                    style = MaterialTheme.typography.titleMedium,
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = user.email,
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
         }
@@ -154,11 +159,12 @@ fun UserCard(
 fun UsersScreenPreview() {
     MaterialTheme {
         UsersListContent(
-            users = listOf(
-                User("1", "Alice Johnson", "alice@example.com"),
-                User("2", "Bob Smith", "bob@example.com")
-            ),
-            onUserClick = {}
+            users =
+                listOf(
+                    User("1", "Alice Johnson", "alice@example.com"),
+                    User("2", "Bob Smith", "bob@example.com"),
+                ),
+            onUserClick = {},
         )
     }
 }

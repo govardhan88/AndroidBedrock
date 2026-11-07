@@ -9,5 +9,7 @@ interface ProductsApiService {
     suspend fun getItems(): Response<List<ProductsDto>>
 
     @GET("products/{id}")
-    suspend fun getItemById(@Path("id") id: String): Response<ProductsDto>
+    suspend fun getItemById(
+        @Path("id") id: String,
+    ): Response<ProductsDto>
 }

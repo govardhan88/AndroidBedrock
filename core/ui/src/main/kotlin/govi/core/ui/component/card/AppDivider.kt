@@ -18,13 +18,14 @@ fun AppDivider(
     modifier: Modifier = Modifier,
     thickness: Dp = 1.dp,
     color: Color = MaterialTheme.colorScheme.outlineVariant,
-    horizontalPadding: Dp = 0.dp
+    horizontalPadding: Dp = 0.dp,
 ) {
     HorizontalDivider(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = horizontalPadding),
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .padding(horizontal = horizontalPadding),
         thickness = thickness,
-        color = color
+        color = color,
     )
 }

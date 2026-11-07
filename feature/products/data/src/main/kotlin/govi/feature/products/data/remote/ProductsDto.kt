@@ -8,11 +8,12 @@ import kotlinx.serialization.Serializable
 data class ProductsDto(
     @SerialName("id") val id: String,
     @SerialName("title") val title: String,
-    @SerialName("description") val description: String? = null
+    @SerialName("description") val description: String? = null,
 ) {
-    fun toDomain(): ProductsItem = ProductsItem(
-        id = id,
-        title = title,
-        description = description.orEmpty()
-    )
+    fun toDomain(): ProductsItem =
+        ProductsItem(
+            id = id,
+            title = title,
+            description = description.orEmpty(),
+        )
 }

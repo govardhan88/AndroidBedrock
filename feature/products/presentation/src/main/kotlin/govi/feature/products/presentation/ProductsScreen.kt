@@ -30,7 +30,7 @@ import govi.feature.products.domain.model.ProductsItem
 @Composable
 fun ProductsScreen(
     modifier: Modifier = Modifier,
-    viewModel: ProductsViewModel = hiltViewModel()
+    viewModel: ProductsViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -38,27 +38,29 @@ fun ProductsScreen(
         topBar = {
             AppTopBar(
                 title = "Products",
-                onBackClick = viewModel::onBackClicked
+                onBackClick = viewModel::onBackClicked,
             )
         },
-        modifier = modifier.fillMaxSize()
+        modifier = modifier.fillMaxSize(),
     ) { innerPadding ->
         AsyncContent(
             state = uiState.itemsState,
             onRetry = viewModel::loadItems,
             loadingContent = {
                 Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                    modifier =
+                        Modifier
+                            .fillMaxSize()
+                            .padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     repeat(4) { ShimmerListItem() }
                 }
             },
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding),
         ) { items ->
             ProductsListContent(items = items)
         }
@@ -68,31 +70,31 @@ fun ProductsScreen(
 @Composable
 fun ProductsListContent(
     items: List<ProductsItem>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     if (items.isEmpty()) {
         EmptyStateView(
             title = "No Products Available",
-            message = "There are currently no products in the catalog."
+            message = "There are currently no products in the catalog.",
         )
     } else {
         LazyColumn(
             modifier = modifier.fillMaxSize(),
             contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             items(items, key = { it.id }) { item ->
                 Card(modifier = Modifier.fillMaxWidth()) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Text(
                             text = item.title,
-                            style = MaterialTheme.typography.titleMedium
+                            style = MaterialTheme.typography.titleMedium,
                         )
                         if (item.description.isNotEmpty()) {
                             Spacer(modifier = Modifier.height(4.dp))
                             Text(
                                 text = item.description,
-                                style = MaterialTheme.typography.bodyMedium
+                                style = MaterialTheme.typography.bodyMedium,
                             )
                         }
                     }
@@ -107,10 +109,11 @@ fun ProductsListContent(
 fun ProductsScreenPreview() {
     MaterialTheme {
         ProductsListContent(
-            items = listOf(
-                ProductsItem("1", "Sample Item 1", "Description for item 1"),
-                ProductsItem("2", "Sample Item 2", "Description for item 2")
-            )
+            items =
+                listOf(
+                    ProductsItem("1", "Sample Item 1", "Description for item 1"),
+                    ProductsItem("2", "Sample Item 2", "Description for item 2"),
+                ),
         )
     }
 }

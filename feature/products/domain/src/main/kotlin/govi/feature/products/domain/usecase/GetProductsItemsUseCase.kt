@@ -4,10 +4,10 @@ import govi.feature.products.domain.model.ProductsItem
 import govi.feature.products.domain.repository.ProductsRepository
 import javax.inject.Inject
 
-class GetProductsItemsUseCase @Inject constructor(
-    private val repository: ProductsRepository
-) {
-    suspend operator fun invoke(): Result<List<ProductsItem>> {
-        return repository.getItems()
+class GetProductsItemsUseCase
+    @Inject
+    constructor(
+        private val repository: ProductsRepository,
+    ) {
+        suspend operator fun invoke(): Result<List<ProductsItem>> = repository.getItems()
     }
-}

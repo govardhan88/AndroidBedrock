@@ -21,7 +21,7 @@ fun AppSearchField(
     modifier: Modifier = Modifier,
     placeholder: String = "Search...",
     onSearch: ((String) -> Unit)? = null,
-    enabled: Boolean = true
+    enabled: Boolean = true,
 ) {
     val focusManager = LocalFocusManager.current
 
@@ -35,12 +35,13 @@ fun AppSearchField(
         enabled = enabled,
         showClearButton = true,
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-        keyboardActions = KeyboardActions(
-            onSearch = {
-                focusManager.clearFocus()
-                onSearch?.invoke(query)
-            }
-        )
+        keyboardActions =
+            KeyboardActions(
+                onSearch = {
+                    focusManager.clearFocus()
+                    onSearch?.invoke(query)
+                },
+            ),
     )
 }
 
@@ -50,7 +51,7 @@ private fun AppSearchFieldPreview() {
     MaterialTheme {
         AppSearchField(
             query = "Android Compose",
-            onQueryChange = {}
+            onQueryChange = {},
         )
     }
 }

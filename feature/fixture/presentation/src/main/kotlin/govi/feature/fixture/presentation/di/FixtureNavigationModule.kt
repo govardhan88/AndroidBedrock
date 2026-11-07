@@ -11,10 +11,7 @@ import govi.feature.fixture.presentation.navigation.FixtureFeatureEntryImpl
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class FixtureNavigationModule {
-
     @Binds
     @IntoSet
-    abstract fun bindFixtureFeatureEntry(
-        entry: FixtureFeatureEntryImpl
-    ): FeatureEntry
+    abstract fun bindFixtureFeatureEntry(entry: FixtureFeatureEntryImpl): FeatureEntry
 }

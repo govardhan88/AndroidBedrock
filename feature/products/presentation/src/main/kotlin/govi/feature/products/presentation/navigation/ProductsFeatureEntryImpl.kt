@@ -7,15 +7,17 @@ import govi.core.navigation.FeatureEntry
 import govi.feature.products.presentation.ProductsScreen
 import javax.inject.Inject
 
-class ProductsFeatureEntryImpl @Inject constructor() : FeatureEntry {
-    override val featureRoute: String = "products"
+class ProductsFeatureEntryImpl
+    @Inject
+    constructor() : FeatureEntry {
+        override val featureRoute: String = "products"
 
-    override fun registerRoute(
-        navGraphBuilder: NavGraphBuilder,
-        navController: NavHostController
-    ) {
-        navGraphBuilder.composable(featureRoute) {
-            ProductsScreen()
+        override fun registerRoute(
+            navGraphBuilder: NavGraphBuilder,
+            navController: NavHostController,
+        ) {
+            navGraphBuilder.composable(featureRoute) {
+                ProductsScreen()
+            }
         }
     }
-}

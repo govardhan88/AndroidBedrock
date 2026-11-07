@@ -7,9 +7,7 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CardElevation
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
@@ -23,7 +21,7 @@ import androidx.compose.ui.unit.dp
 enum class CardVariant {
     Elevated,
     Outlined,
-    Filled
+    Filled,
 }
 
 /**
@@ -36,7 +34,7 @@ fun AppCard(
     onClick: (() -> Unit)? = null,
     shape: Shape = MaterialTheme.shapes.large,
     contentPadding: Dp = 16.dp,
-    content: @Composable ColumnScope.() -> Unit
+    content: @Composable ColumnScope.() -> Unit,
 ) {
     val clickModifier = if (onClick != null) modifier.clickable(onClick = onClick) else modifier
 
@@ -46,7 +44,7 @@ fun AppCard(
                 modifier = clickModifier.fillMaxWidth(),
                 shape = shape,
                 elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
             ) {
                 Column(modifier = Modifier.padding(contentPadding), content = content)
             }
@@ -56,7 +54,7 @@ fun AppCard(
                 modifier = clickModifier.fillMaxWidth(),
                 shape = shape,
                 border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
-                colors = CardDefaults.outlinedCardColors(containerColor = MaterialTheme.colorScheme.surface)
+                colors = CardDefaults.outlinedCardColors(containerColor = MaterialTheme.colorScheme.surface),
             ) {
                 Column(modifier = Modifier.padding(contentPadding), content = content)
             }
@@ -65,7 +63,7 @@ fun AppCard(
             Card(
                 modifier = clickModifier.fillMaxWidth(),
                 shape = shape,
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
             ) {
                 Column(modifier = Modifier.padding(contentPadding), content = content)
             }

@@ -24,26 +24,26 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun FullScreenLoadingView(
     modifier: Modifier = Modifier,
-    message: String? = null
+    message: String? = null,
 ) {
     Box(
         modifier = modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
+        contentAlignment = Alignment.Center,
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.Center,
         ) {
             CircularProgressIndicator(
                 color = MaterialTheme.colorScheme.primary,
-                strokeWidth = 3.dp
+                strokeWidth = 3.dp,
             )
             if (!message.isNullOrBlank()) {
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
                     text = message,
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
         }
@@ -58,12 +58,12 @@ fun InlineLoadingIndicator(
     modifier: Modifier = Modifier,
     size: Dp = 20.dp,
     strokeWidth: Dp = 2.dp,
-    color: Color = MaterialTheme.colorScheme.primary
+    color: Color = MaterialTheme.colorScheme.primary,
 ) {
     CircularProgressIndicator(
         modifier = modifier.size(size),
         color = color,
-        strokeWidth = strokeWidth
+        strokeWidth = strokeWidth,
     )
 }
 

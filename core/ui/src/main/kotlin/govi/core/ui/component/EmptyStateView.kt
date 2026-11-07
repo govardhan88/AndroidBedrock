@@ -32,23 +32,24 @@ fun EmptyStateView(
     message: String? = null,
     icon: ImageVector = Icons.Default.Info,
     actionLabel: String? = null,
-    onActionClick: (() -> Unit)? = null
+    onActionClick: (() -> Unit)? = null,
 ) {
     Box(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(24.dp),
-        contentAlignment = Alignment.Center
+        modifier =
+            modifier
+                .fillMaxSize()
+                .padding(24.dp),
+        contentAlignment = Alignment.Center,
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.Center,
         ) {
             Icon(
                 imageVector = icon,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.outline,
-                modifier = Modifier.size(56.dp)
+                modifier = Modifier.size(56.dp),
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -57,7 +58,7 @@ fun EmptyStateView(
                 text = title,
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onSurface,
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
             )
 
             if (!message.isNullOrBlank()) {
@@ -66,7 +67,7 @@ fun EmptyStateView(
                     text = message,
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.Center,
                 )
             }
 
@@ -88,7 +89,7 @@ private fun EmptyStateViewPreview() {
             title = "No Items Found",
             message = "We couldn't find anything matching your search criteria.",
             actionLabel = "Clear Filter",
-            onActionClick = {}
+            onActionClick = {},
         )
     }
 }
