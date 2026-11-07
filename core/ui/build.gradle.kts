@@ -9,4 +9,5 @@ android {
 
 dependencies {
     implementation(libs.kotlinx.coroutines.core)
+    api(libs.androidx.compose.material.icons.extended)
 }

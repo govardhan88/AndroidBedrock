@@ -128,14 +128,31 @@ class MainActivity : ComponentActivity() {
 
 ## 🎨 4. Bedrock UI & Design System (`:core:ui`)
 
-`:core:ui` provides a foundation for modern Jetpack Compose applications:
+`:core:ui` provides a production-grade, enterprise-ready Design System for all Jetpack Compose feature presentation modules:
 
 ### Design Tokens & Theming (`govi.core.ui.theme`)
 * **`AppTheme`**: Material 3 theme supporting dynamic color on Android 12+ (`dynamicColor = true`), dark/light theme switching, and accessible color roles.
-* **Tokens**: Centralized color palette, typography scale (`AppTypography`), and shape scales (`AppShapes`).
+* **Tokens**: Centralized color palette, typography scale (`AppTypography`), shape scales (`AppShapes`), and spacing tokens (`Spacing`, `MaterialTheme.spacing.medium`).
 
-### Asynchronous State & Feedback Components (`govi.core.ui.component`)
-* **`AsyncState<T>`**: Generic state holder (`Loading`, `Success<T>`, `Error`).
+### Form & Input Controls (`govi.core.ui.component.input`)
+* **`AppTextField`**: Standard text input supporting labels, placeholders, leading icons, clear button, and inline validation error messages.
+* **`AppPasswordTextField`**: Secure password field with visibility toggle eye icon and password masking.
+* **`AppSearchField`**: Search input field with search icon, clear button, and `ImeAction.Search` callback.
+
+### Dialogs & Bottom Sheets (`govi.core.ui.component.dialog`)
+* **`AppConfirmationDialog`**: Alert dialog for confirmations, dismissals, or destructive delete actions (`isDestructive = true`).
+* **`AppModalBottomSheet`**: Modal bottom sheet container with drag handle, title, close action, and content slot.
+
+### Status Badges & Chips (`govi.core.ui.component.badge`)
+* **`StatusBadge`**: Visual status tag for entity states (e.g. `Success`, `Warning`, `Error`, `Info`, `Neutral`) with background tints and dot indicators.
+
+### Cards, Lists & Dividers (`govi.core.ui.component.card`)
+* **`AppCard`**: Standardized cards supporting `Elevated`, `Outlined`, and `Filled` variants with unified padding.
+* **`AppListItem`**: Standard list item row with leading icon/avatar, title, subtitle, and trailing chevron/action slot.
+* **`AppDivider`**: Standard horizontal separator using theme outlineVariant tokens.
+
+### Asynchronous State & Feedback (`govi.core.ui.component`)
+* **`AsyncState<T>`**: Generic state holder (`Loading`, `Success<T>`, `Error`, `Idle`).
 * **`AsyncContent`**: Composable with smooth crossfading, default or custom loading spinners, and error views with retry.
 * **`FullScreenLoadingView` & `InlineLoadingIndicator`**: Centered full-screen or compact inline spinners with optional status messages.
 * **`ErrorView`**: Alert layout with error icon, title, description, and "Retry" CTA.
@@ -146,10 +163,15 @@ class MainActivity : ComponentActivity() {
 * **`ShimmerBox`**: Rounded shimmer placeholder box.
 * **`ShimmerListItem`**: Skeleton card placeholder mimicking list items during initial loading.
 
-### Reusable Controls & Navigation Bars
+### Reusable Buttons & Navigation Bars
 * **`PrimaryButton`, `SecondaryButton`, `AppOutlinedButton`**: Material 3 buttons with built-in loading spinners (`isLoading: Boolean`).
+* **`AppTextButton` & `AppIconButton`**: Low-emphasis text buttons and icon buttons.
 * **`AppTopBar`**: Standardized top bar encapsulating Material 3 experimental APIs with back navigation and action slots.
 * **`ObserveAsEvents`**: Lifecycle-aware (`Lifecycle.State.STARTED`) `Flow<T>` observer preventing dropped or duplicate one-time events (Snackbars, toasts, navigation intents).
+* **`SnackbarController` & `AppSnackbarHost`**: Decoupled ViewModel-to-UI Snackbar dispatch channel.
+
+### Live Design System Showcase
+* **[`DesignSystemShowcase`](file:///Users/tejendranathreddy/AndroidStudioProjects/clean-architecture-template/core/ui/src/main/kotlin/govi/core/ui/preview/DesignSystemShowcase.kt)**: Complete interactive catalog preview displaying all components side-by-side.
 
 ---
 
