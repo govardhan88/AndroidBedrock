@@ -5,7 +5,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import govi.core.navigation.FeatureEntry
 import govi.core.navigation.route.AppRoute
-import govi.feature.products.presentation.ProductsScreen
+import govi.feature.products.presentation.ProductsRoute
 import javax.inject.Inject
 
 class ProductsFeatureEntryImpl
@@ -16,7 +16,7 @@ class ProductsFeatureEntryImpl
             navController: NavHostController,
         ) {
             navGraphBuilder.composable<AppRoute.Products> {
-                ProductsScreen()
+                ProductsRoute()
             }
         }
     }

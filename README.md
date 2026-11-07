@@ -221,6 +221,55 @@ class MainActivity : ComponentActivity() {
 ### Live Design System Showcase
 * **[`DesignSystemShowcase`](file:///Users/tejendranathreddy/AndroidStudioProjects/clean-architecture-template/core/ui/src/main/kotlin/govi/core/ui/preview/DesignSystemShowcase.kt)**: Complete interactive catalog preview displaying all components side-by-side.
 
+### 🏛️ Jetpack Compose Architecture Principles
+All presentation screens adhere to official Android Architecture and Jetpack Compose gold standards:
+
+1. **Stateful Route vs Stateless Screen Pattern**:
+   * **`*Route`**: Injects ViewModel via `hiltViewModel()`, collects UI state using `collectAsStateWithLifecycle()`, and binds user actions to ViewModel functions. This is registered in `FeatureEntry`.
+   * **`*Screen`**: Pure stateless composable receiving plain state objects (`*UiState`) and lambda callbacks (`onRetry: () -> Unit`, `onBackClick: () -> Unit`). Zero Android/Hilt dependencies for instant Compose Previews and headless UI testing.
+   ```kotlin
+   // Stateful Route (Injected & Connected)
+   @Composable
+   fun UsersRoute(
+       modifier: Modifier = Modifier,
+       viewModel: UsersViewModel = hiltViewModel(),
+   ) {
+       val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+       UsersScreen(
+           uiState = uiState,
+           onRetry = viewModel::loadUsers,
+           onBackClick = viewModel::onBackClicked,
+           modifier = modifier,
+       )
+   }
+
+   // Stateless Screen (Previewable & Pure)
+   @Composable
+   fun UsersScreen(
+       uiState: UsersUiState,
+       onRetry: () -> Unit,
+       onBackClick: () -> Unit,
+       modifier: Modifier = Modifier,
+   ) {
+       Scaffold(...) { innerPadding ->
+           AsyncContent(state = uiState.usersState, onRetry = onRetry) { users ->
+               UsersListContent(users = users)
+           }
+       }
+   }
+   ```
+2. **Design System & Spacing Token Enforcement**:
+   * Layouts consistently use `MaterialTheme.spacing` (`spacing.small`, `spacing.medium`, `spacing.large`) rather than ad-hoc dp literals.
+   * Visual elements reuse design system primitives like `AppCard`, `AppListItem`, `AppTopBar`, and `EmptyStateView`.
+3. **Multi-State Compose Previews**:
+   * Every screen provides 4 distinct `@Preview` composables rendered in Android Studio without emulator/backend overhead:
+     * `Success State`
+     * `Loading State`
+     * `Error State`
+     * `Empty State`
+4. **Scaffolding Automation**:
+   * Any new feature generated via `./gradlew createFeature` automatically adheres to this pattern out-of-the-box.
+
 ---
 
 ## ⚡ 5. Automated Feature Scaffolding Task (`createFeature`)

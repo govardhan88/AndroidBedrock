@@ -5,7 +5,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import govi.core.navigation.FeatureEntry
 import govi.core.navigation.route.AppRoute
-import govi.feature.settings.presentation.SettingsScreen
+import govi.feature.settings.presentation.SettingsRoute
 import javax.inject.Inject
 
 class SettingsFeatureEntryImpl
@@ -16,7 +16,7 @@ class SettingsFeatureEntryImpl
             navController: NavHostController,
         ) {
             navGraphBuilder.composable<AppRoute.Settings> {
-                SettingsScreen()
+                SettingsRoute()
             }
         }
     }

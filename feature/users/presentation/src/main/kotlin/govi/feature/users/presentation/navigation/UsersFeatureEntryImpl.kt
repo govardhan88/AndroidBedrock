@@ -5,7 +5,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import govi.core.navigation.FeatureEntry
 import govi.core.navigation.route.AppRoute
-import govi.feature.users.presentation.UsersScreen
+import govi.feature.users.presentation.UsersRoute
 import javax.inject.Inject
 
 class UsersFeatureEntryImpl
@@ -16,7 +16,7 @@ class UsersFeatureEntryImpl
             navController: NavHostController,
         ) {
             navGraphBuilder.composable<AppRoute.Users> {
-                UsersScreen()
+                UsersRoute()
             }
         }
     }

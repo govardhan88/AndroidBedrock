@@ -5,7 +5,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import govi.core.navigation.FeatureEntry
 import govi.core.navigation.route.AppRoute
-import govi.feature.fixture.presentation.FixtureScreen
+import govi.feature.fixture.presentation.FixtureRoute
 import javax.inject.Inject
 
 class FixtureFeatureEntryImpl
@@ -16,7 +16,7 @@ class FixtureFeatureEntryImpl
             navController: NavHostController,
         ) {
             navGraphBuilder.composable<AppRoute.Fixture> {
-                FixtureScreen()
+                FixtureRoute()
             }
         }
     }
