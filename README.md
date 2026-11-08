@@ -1,4 +1,4 @@
-# Govi Clean Architecture Android Starter Template
+# Android Bedrock - Clean Architecture Starter Template
 
 A modular, production-grade Android Clean Architecture starter template powered by Gradle Convention Plugins, Jetpack Compose, Kotlin 2.x, Dagger Hilt, Retrofit, and automated feature scaffolding.
 

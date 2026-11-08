@@ -15,7 +15,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "govi-clean-architecture-template"
+rootProject.name = "android-bedrock"
 
 // Core modules
 include(":core:base")
