@@ -81,7 +81,8 @@ jobs:
           if-no-files-found: error
 
       - name: Distribute to Firebase App Distribution
-        if: env.FIREBASE_APP_ID != '' && env.FIREBASE_SERVICE_ACCOUNT_JSON != ''
+        if: (github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch') && env.FIREBASE_APP_ID != '' && env.FIREBASE_SERVICE_ACCOUNT_JSON != ''
+        continue-on-error: true
         uses: wzieba/Firebase-Distribution-Github-Action@v1
         with:
           appId: ${{ secrets.FIREBASE_APP_ID }}
