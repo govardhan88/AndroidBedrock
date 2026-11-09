@@ -1,15 +1,11 @@
 package govi.feature.users.presentation
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import govi.core.base.viewmodel.BaseViewModel
 import govi.core.navigation.AppNavigator
 import govi.core.ui.AsyncState
 import govi.feature.users.domain.usecase.GetUsersUseCase
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -17,24 +13,28 @@ import javax.inject.Inject
 class UsersViewModel @Inject constructor(
     private val getUsersUseCase: GetUsersUseCase,
     private val appNavigator: AppNavigator,
-) : ViewModel() {
-    private val _uiState = MutableStateFlow(UsersUiState())
-    val uiState: StateFlow<UsersUiState> = _uiState.asStateFlow()
-
+) : BaseViewModel<UsersUiState, UsersIntent, UsersEffect>(UsersUiState()) {
     init {
         loadUsers()
     }
 
+    override fun processIntent(intent: UsersIntent) {
+        when (intent) {
+            is UsersIntent.LoadUsers -> loadUsers()
+            is UsersIntent.UserClicked -> onUserClicked(intent.userId)
+        }
+    }
+
     fun loadUsers() {
         viewModelScope.launch {
-            _uiState.update { it.copy(usersState = AsyncState.Loading) }
+            updateState { copy(usersState = AsyncState.Loading) }
             getUsersUseCase().fold(
                 onSuccess = { users ->
-                    _uiState.update { it.copy(usersState = AsyncState.Success(users)) }
+                    updateState { copy(usersState = AsyncState.Success(users)) }
                 },
                 onFailure = { error ->
-                    _uiState.update {
-                        it.copy(
+                    updateState {
+                        copy(
                             usersState =
                                 AsyncState.Error(
                                     error.message ?: "An unexpected error occurred",

@@ -1,5 +1,6 @@
 package govi.core.network
 
+import kotlinx.coroutines.CancellationException
 import retrofit2.Response
 
 suspend fun <T> safeApiCall(apiCall: suspend () -> Response<T>): NetworkResult<T> =
@@ -19,6 +20,8 @@ suspend fun <T> safeApiCall(apiCall: suspend () -> Response<T>): NetworkResult<T
                 errorBody = response.errorBody()?.string(),
             )
         }
+    } catch (e: CancellationException) {
+        throw e
     } catch (e: Throwable) {
         NetworkResult.Exception(e)
     }

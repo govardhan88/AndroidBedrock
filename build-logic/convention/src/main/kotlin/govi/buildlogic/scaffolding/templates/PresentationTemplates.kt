@@ -8,12 +8,24 @@ object PresentationTemplates {
         """
         package govi.feature.$featureName.presentation
 
+        import govi.core.base.mvi.UiEffect
+        import govi.core.base.mvi.UiIntent
+        import govi.core.base.mvi.UiState
         import govi.core.ui.AsyncState
         import govi.feature.$featureName.domain.model.${className}Item
 
         data class ${className}UiState(
             val itemsState: AsyncState<List<${className}Item>> = AsyncState.Loading,
-        )
+        ) : UiState
+
+        sealed interface ${className}Intent : UiIntent {
+            data object LoadItems : ${className}Intent
+            data object BackClicked : ${className}Intent
+        }
+
+        sealed interface ${className}Effect : UiEffect {
+            data object NavigateBack : ${className}Effect
+        }
         """.trimIndent() + "\n"
 
     fun viewModel(
@@ -23,16 +35,12 @@ object PresentationTemplates {
         """
         package govi.feature.$featureName.presentation
 
-        import androidx.lifecycle.ViewModel
         import androidx.lifecycle.viewModelScope
         import dagger.hilt.android.lifecycle.HiltViewModel
+        import govi.core.base.viewmodel.BaseViewModel
         import govi.core.navigation.AppNavigator
         import govi.core.ui.AsyncState
         import govi.feature.$featureName.domain.usecase.Get${className}ItemsUseCase
-        import kotlinx.coroutines.flow.MutableStateFlow
-        import kotlinx.coroutines.flow.StateFlow
-        import kotlinx.coroutines.flow.asStateFlow
-        import kotlinx.coroutines.flow.update
         import kotlinx.coroutines.launch
         import javax.inject.Inject
 
@@ -40,24 +48,28 @@ object PresentationTemplates {
         class ${className}ViewModel @Inject constructor(
             private val getItemsUseCase: Get${className}ItemsUseCase,
             private val appNavigator: AppNavigator,
-        ) : ViewModel() {
-            private val _uiState = MutableStateFlow(${className}UiState())
-            val uiState: StateFlow<${className}UiState> = _uiState.asStateFlow()
-
+        ) : BaseViewModel<${className}UiState, ${className}Intent, ${className}Effect>(${className}UiState()) {
             init {
                 loadItems()
             }
 
+            override fun processIntent(intent: ${className}Intent) {
+                when (intent) {
+                    is ${className}Intent.LoadItems -> loadItems()
+                    is ${className}Intent.BackClicked -> onBackClicked()
+                }
+            }
+
             fun loadItems() {
                 viewModelScope.launch {
-                    _uiState.update { it.copy(itemsState = AsyncState.Loading) }
+                    updateState { copy(itemsState = AsyncState.Loading) }
                     getItemsUseCase().fold(
                         onSuccess = { items ->
-                            _uiState.update { it.copy(itemsState = AsyncState.Success(items)) }
+                            updateState { copy(itemsState = AsyncState.Success(items)) }
                         },
                         onFailure = { error ->
-                            _uiState.update {
-                                it.copy(
+                            updateState {
+                                copy(
                                     itemsState =
                                         AsyncState.Error(
                                             error.message ?: "An unexpected error occurred",

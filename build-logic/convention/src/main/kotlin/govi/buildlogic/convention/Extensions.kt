@@ -33,6 +33,12 @@ internal fun Project.configureKotlinAndroid(libraryExtension: LibraryExtension) 
             sourceCompatibility = JavaVersion.VERSION_21
             targetCompatibility = JavaVersion.VERSION_21
         }
+
+        lint {
+            abortOnError = true
+            warningsAsErrors = true
+            checkDependencies = true
+        }
     }
 
     configureKotlinJvm()

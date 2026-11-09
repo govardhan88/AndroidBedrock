@@ -1,15 +1,11 @@
 package govi.feature.products.presentation
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import govi.core.base.viewmodel.BaseViewModel
 import govi.core.navigation.AppNavigator
 import govi.core.ui.AsyncState
 import govi.feature.products.domain.usecase.GetProductsItemsUseCase
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -17,24 +13,28 @@ import javax.inject.Inject
 class ProductsViewModel @Inject constructor(
     private val getItemsUseCase: GetProductsItemsUseCase,
     private val appNavigator: AppNavigator,
-) : ViewModel() {
-    private val _uiState = MutableStateFlow(ProductsUiState())
-    val uiState: StateFlow<ProductsUiState> = _uiState.asStateFlow()
-
+) : BaseViewModel<ProductsUiState, ProductsIntent, ProductsEffect>(ProductsUiState()) {
     init {
         loadItems()
     }
 
+    override fun processIntent(intent: ProductsIntent) {
+        when (intent) {
+            is ProductsIntent.LoadItems -> loadItems()
+            is ProductsIntent.BackClicked -> onBackClicked()
+        }
+    }
+
     fun loadItems() {
         viewModelScope.launch {
-            _uiState.update { it.copy(itemsState = AsyncState.Loading) }
+            updateState { copy(itemsState = AsyncState.Loading) }
             getItemsUseCase().fold(
                 onSuccess = { items ->
-                    _uiState.update { it.copy(itemsState = AsyncState.Success(items)) }
+                    updateState { copy(itemsState = AsyncState.Success(items)) }
                 },
                 onFailure = { error ->
-                    _uiState.update {
-                        it.copy(
+                    updateState {
+                        copy(
                             itemsState =
                                 AsyncState.Error(
                                     error.message ?: "An unexpected error occurred",

@@ -3,6 +3,7 @@ package govi.core.base.usecase
 import govi.core.base.dispatcher.AppDispatchers
 import govi.core.base.result.AppError
 import govi.core.base.result.AppResult
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flowOn
@@ -16,6 +17,9 @@ abstract class FlowUseCase<in P, out R>(
     operator fun invoke(parameters: P): Flow<AppResult<R>> =
         execute(parameters)
             .catch { e ->
+                if (e is CancellationException) {
+                    throw e
+                }
                 emit(
                     AppResult.Error(
                         AppError.Unknown(

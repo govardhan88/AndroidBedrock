@@ -48,51 +48,20 @@ class MainActivity : ComponentActivity() {
                     ObserveAsEvents(appNavigator.navigationChannel) { intent ->
                         when (intent) {
                             is NavigationIntent.NavigateTo -> {
-                                val route = intent.route
-                                val popUp = intent.popUpToRoute
-                                when (route) {
-                                    is String -> {
-                                        navController.navigate(route) {
-                                            popUp?.let { target ->
-                                                if (target is String) {
-                                                    popUpTo(target) {
-                                                        inclusive = intent.inclusive
-                                                    }
-                                                } else {
-                                                    popUpTo(target) {
-                                                        inclusive = intent.inclusive
-                                                    }
-                                                }
-                                            }
-                                            launchSingleTop = intent.isSingleTop
+                                navController.navigate(intent.route) {
+                                    intent.popUpToRoute?.let { target ->
+                                        popUpTo(target) {
+                                            inclusive = intent.inclusive
                                         }
                                     }
-                                    else -> {
-                                        navController.navigate(route) {
-                                            popUp?.let { target ->
-                                                if (target is String) {
-                                                    popUpTo(target) {
-                                                        inclusive = intent.inclusive
-                                                    }
-                                                } else {
-                                                    popUpTo(target) {
-                                                        inclusive = intent.inclusive
-                                                    }
-                                                }
-                                            }
-                                            launchSingleTop = intent.isSingleTop
-                                        }
-                                    }
+                                    launchSingleTop = intent.isSingleTop
                                 }
                             }
                             is NavigationIntent.NavigateBack -> {
                                 navController.popBackStack()
                             }
                             is NavigationIntent.PopTo -> {
-                                when (val route = intent.route) {
-                                    is String -> navController.popBackStack(route, intent.inclusive)
-                                    else -> navController.popBackStack(route, intent.inclusive)
-                                }
+                                navController.popBackStack(intent.route, intent.inclusive)
                             }
                         }
                     }

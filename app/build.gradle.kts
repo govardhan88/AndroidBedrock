@@ -67,7 +67,8 @@ android {
                     resolveConfigProperty("BASE_URL", "https://api.example.com/"),
                 )
             buildConfigField("String", "BASE_URL", "\"$prodUrl\"")
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
@@ -78,6 +79,12 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_21
         targetCompatibility = JavaVersion.VERSION_21
+    }
+
+    lint {
+        abortOnError = true
+        warningsAsErrors = true
+        checkDependencies = true
     }
 }
 

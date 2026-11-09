@@ -3,6 +3,7 @@ package govi.core.base.usecase
 import govi.core.base.dispatcher.AppDispatchers
 import govi.core.base.result.AppError
 import govi.core.base.result.AppResult
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.withContext
 
 /**
@@ -16,6 +17,8 @@ abstract class BaseUseCase<in P, out R>(
         withContext(dispatchers.io) {
             try {
                 execute(parameters)
+            } catch (e: CancellationException) {
+                throw e
             } catch (e: Exception) {
                 AppResult.Error(
                     AppError.Unknown(

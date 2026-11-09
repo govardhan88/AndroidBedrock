@@ -36,6 +36,12 @@ class BaseUseCaseTest {
         override suspend fun execute(parameters: Unit): AppResult<String> = throw IllegalStateException("Database query failed")
     }
 
+    class CancellingUseCase(
+        dispatchers: AppDispatchers,
+    ) : BaseUseCase<Unit, String>(dispatchers) {
+        override suspend fun execute(parameters: Unit): AppResult<String> = throw kotlinx.coroutines.CancellationException("Job cancelled")
+    }
+
     class StreamUseCase(
         dispatchers: AppDispatchers,
     ) : FlowUseCase<String, String>(dispatchers) {
@@ -64,6 +70,14 @@ class BaseUseCaseTest {
             val error = (result as AppResult.Error).error
             assertTrue(error is AppError.Unknown)
             assertEquals("Database query failed", error.message)
+        }
+
+    @Test(expected = kotlinx.coroutines.CancellationException::class)
+    fun `suspending usecase rethrows cancellation exception`() =
+        runTest {
+            val testDispatcher = StandardTestDispatcher(testScheduler)
+            val useCase = CancellingUseCase(TestDispatchers(testDispatcher))
+            useCase(Unit)
         }
 
     @Test
