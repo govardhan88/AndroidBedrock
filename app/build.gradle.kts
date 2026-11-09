@@ -31,10 +31,82 @@ fun resolveConfigProperty(
         FileInputStream(localFile).use { props.load(it) }
         val fromLocal = props.getProperty(key)?.trim()
         if (!fromLocal.isNullOrEmpty()) return fromLocal
+
+        val altKey =
+            if (key.contains('_')) {
+                key.lowercase().replace('_', '.')
+            } else {
+                key.uppercase().replace('.', '_')
+            }
+        val fromAltLocal = props.getProperty(altKey)?.trim()
+        if (!fromAltLocal.isNullOrEmpty()) return fromAltLocal
     }
 
     return default
 }
+
+fun setupGoogleServicesJson() {
+    val targetFile = file("google-services.json")
+
+    // 1. Check if a custom file path is configured in local.properties or env
+    val customPath = resolveConfigProperty("GOOGLE_SERVICES_JSON_PATH", "")
+    if (customPath.isNotEmpty()) {
+        val srcFile = rootProject.file(customPath).takeIf { it.exists() } ?: file(customPath)
+        if (srcFile.exists()) {
+            srcFile.copyTo(targetFile, overwrite = true)
+            return
+        }
+    }
+
+    // 2. Check if raw JSON content is configured in local.properties, gradle properties, or env
+    val rawJson = resolveConfigProperty("GOOGLE_SERVICES_JSON", "")
+    if (rawJson.isNotEmpty()) {
+        targetFile.writeText(rawJson)
+        return
+    }
+
+    // 3. If target file already exists (e.g. dropped manually by developer or injected by CI), preserve it
+    if (targetFile.exists()) {
+        return
+    }
+
+    // 4. Default fallback: generate starter placeholder so builds never fail when unconfigured
+    targetFile.writeText(
+        """
+        {
+          "project_info": {
+            "project_number": "000000000000",
+            "project_id": "android-bedrock-starter",
+            "storage_bucket": "android-bedrock-starter.appspot.com"
+          },
+          "client": [
+            {
+              "client_info": {
+                "mobilesdk_app_id": "1:000000000000:android:0000000000000000000000",
+                "android_client_info": {
+                  "package_name": "com.govi.androidbedrock"
+                }
+              },
+              "oauth_client": [],
+              "api_key": [
+                {
+                  "current_key": "AIzaSyStarterMockKeyLocalCIBuildPassing0"
+                }
+              ],
+              "services": {
+                "appinvite_service": {
+                  "other_platform_oauth_client": []
+                }
+              }
+            }
+          ],
+          "configuration_version": "1"
+        }
+        """.trimIndent() + "\n",
+    )
+}
+
+setupGoogleServicesJson()
 
 android {
     namespace = "com.govi.androidbedrock"

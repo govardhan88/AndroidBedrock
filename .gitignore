@@ -10,3 +10,7 @@
 *.apk
 *.aab
 build/
+
+# Firebase credentials (never commit to version control)
+google-services.json
+**/google-services.json
