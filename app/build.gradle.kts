@@ -6,6 +6,8 @@ plugins {
     alias(libs.plugins.kotlin.android)
     id("bedrock.android.compose")
     id("bedrock.android.hilt")
+    alias(libs.plugins.google.services)
+    alias(libs.plugins.firebase.crashlytics)
 }
 
 // Dynamically resolves configuration properties from:
@@ -94,6 +96,7 @@ dependencies {
     implementation(project(":core:network"))
     implementation(project(":core:datastore"))
     implementation(project(":core:ui"))
+    implementation(project(":core:firebase"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.activity.compose)

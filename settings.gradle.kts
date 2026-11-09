@@ -23,6 +23,7 @@ include(":core:navigation")
 include(":core:network")
 include(":core:ui")
 include(":core:datastore")
+include(":core:firebase")
 
 // Application entry
 include(":app")
