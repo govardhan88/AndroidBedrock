@@ -4,8 +4,8 @@ import java.util.Properties
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
-    id("govi.android.compose")
-    id("govi.android.hilt")
+    id("bedrock.android.compose")
+    id("bedrock.android.hilt")
 }
 
 // Dynamically resolves configuration properties from:
@@ -35,7 +35,7 @@ fun resolveConfigProperty(
 }
 
 android {
-    namespace = "govi.app"
+    namespace = "com.govi.androidbedrock"
     compileSdk = 37
 
     buildFeatures {
@@ -43,7 +43,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "govi.app"
+        applicationId = "com.govi.androidbedrock"
         minSdk = 24
         targetSdk = 35
         versionCode = 1

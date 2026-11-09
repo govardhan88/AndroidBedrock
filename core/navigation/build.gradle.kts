@@ -1,12 +1,12 @@
 plugins {
-    id("govi.android.library")
-    id("govi.android.compose")
-    id("govi.android.hilt")
+    id("bedrock.android.library")
+    id("bedrock.android.compose")
+    id("bedrock.android.hilt")
     alias(libs.plugins.kotlin.serialization)
 }
 
 android {
-    namespace = "govi.core.navigation"
+    namespace = "com.govi.androidbedrock.core.navigation"
 }
 
 dependencies {

@@ -21,12 +21,12 @@ The repository follows Google's recommended multi-module Clean Architecture guid
 └── feature/
     │   # 1. Divided Architecture (3 Submodules) - For Complex Core Domains
     ├── users/                          # Reference Divided Feature
-    │   ├── domain/                     # Pure Kotlin (govi.kotlin.jvm): Models, UseCases, Repositories
-    │   ├── data/                       # Android Library (govi.android.library, hilt): DTOs, API, Impl
-    │   └── presentation/               # Android Feature (govi.android.feature): Compose UI, ViewModel, FeatureEntry
+    │   ├── domain/                     # Pure Kotlin (bedrock.kotlin.jvm): Models, UseCases, Repositories
+    │   ├── data/                       # Android Library (bedrock.android.library, hilt): DTOs, API, Impl
+    │   └── presentation/               # Android Feature (bedrock.android.feature): Compose UI, ViewModel, FeatureEntry
     │
     │   # 2. Compact Architecture (Single Module) - For Lightweight / UI-centric Screens
-    └── settings/                       # Reference Compact Feature (govi.android.feature)
+    └── settings/                       # Reference Compact Feature (bedrock.android.feature)
         └── src/main/kotlin/govi/feature/settings/
             ├── domain/                 # Internal UseCase and Models
             ├── data/                   # Internal API service and Repository implementation
@@ -41,16 +41,16 @@ All build logic is centralized in the `build-logic` composite build using Gradle
 
 | Plugin ID | Class Name | Purpose |
 |---|---|---|
-| `govi.android.library` | `AndroidLibraryConventionPlugin` | Configures Android library target SDK, min SDK, Java 21, coroutines, and testing |
-| `govi.android.compose` | `AndroidComposeConventionPlugin` | Enables Compose, Compose BOM, Material3, and **Compose Compiler metrics/reports** |
-| `govi.android.hilt` | `AndroidHiltConventionPlugin` | Configures Dagger Hilt with KSP annotation processing |
-| `govi.android.feature` | `AndroidFeatureConventionPlugin` | Aggregates `library`, `compose`, `hilt`, and `:core:navigation` dependencies |
-| `govi.kotlin.jvm` | `KotlinJvmConventionPlugin` | Pure Kotlin/JVM module setup for clean domain modules (zero Android dependencies) |
-| `govi.scaffolding` | `ScaffoldingPlugin` | Modular scaffolding system in `build-logic` powering `createFeature` and code generation |
+| `bedrock.android.library` | `AndroidLibraryConventionPlugin` | Configures Android library target SDK, min SDK, Java 21, coroutines, and testing |
+| `bedrock.android.compose` | `AndroidComposeConventionPlugin` | Enables Compose, Compose BOM, Material3, and **Compose Compiler metrics/reports** |
+| `bedrock.android.hilt` | `AndroidHiltConventionPlugin` | Configures Dagger Hilt with KSP annotation processing |
+| `bedrock.android.feature` | `AndroidFeatureConventionPlugin` | Aggregates `library`, `compose`, `hilt`, and `:core:navigation` dependencies |
+| `bedrock.kotlin.jvm` | `KotlinJvmConventionPlugin` | Pure Kotlin/JVM module setup for clean domain modules (zero Android dependencies) |
+| `bedrock.scaffolding` | `ScaffoldingPlugin` | Modular scaffolding system in `build-logic` powering `createFeature` and code generation |
 
 ### Compose Compiler Metrics & Reports
 
-The `govi.android.compose` plugin supports Compose compiler stability metrics and reports. To activate:
+The `bedrock.android.compose` plugin supports Compose compiler stability metrics and reports. To activate:
 
 ```bash
 ./gradlew compileDebugKotlin -PcomposeCompilerMetrics=true -PcomposeCompilerReports=true
@@ -115,13 +115,13 @@ Injected automatically into the build via `ORG_GRADLE_PROJECT_` prefix or CLI fl
 
 `:core:base` provides the foundational architecture abstractions, concurrency management, and MVI foundation for all features and core modules:
 
-### 1. Concurrency & Dispatchers (`govi.core.base.dispatcher`)
+### 1. Concurrency & Dispatchers (`com.govi.androidbedrock.core.base.dispatcher`)
 * **`AppDispatchers`**: Centralized contract exposing `io`, `default`, `main`, `mainImmediate`, and `unconfined` coroutine dispatchers for deterministic testing.
 * **`DefaultAppDispatchers`**: Production implementation backed by standard `kotlinx.coroutines.Dispatchers`.
 * **Qualifiers**: `@IoDispatcher`, `@DefaultDispatcher`, `@MainDispatcher`, `@MainImmediateDispatcher` for dependency injection.
 * **`DispatchersModule`**: Hilt module providing dispatcher bindings across the app.
 
-### 2. MVI & Base ViewModel (`govi.core.base.mvi` & `govi.core.base.viewmodel`)
+### 2. MVI & Base ViewModel (`com.govi.androidbedrock.core.base.mvi` & `com.govi.androidbedrock.core.base.viewmodel`)
 * **`UiState`**: Marker interface for immutable screen state objects.
 * **`UiIntent`**: Marker interface for user actions and intents.
 * **`UiEffect`**: Marker interface for one-time side effects (navigation, toasts, snackbars).
@@ -131,7 +131,7 @@ Injected automatically into the build via `ORG_GRADLE_PROJECT_` prefix or CLI fl
   * Encapsulates `updateState { ... }` and `sendEffect(...)`.
   * Abstract `processIntent(intent: Intent)` enforcing Unidirectional Data Flow (UDF).
 
-### 3. Functional Result & Error Monad (`govi.core.base.result`)
+### 3. Functional Result & Error Monad (`com.govi.androidbedrock.core.base.result`)
 * **`AppResult<T>`**: Strongly-typed result container (`Success<T>`, `Error`, `Loading`) with functional operators:
   * `map { ... }`: Value transformation preserving error and loading states.
   * `onSuccess { ... }` & `onError { ... }`: Declarative chaining.
@@ -139,7 +139,7 @@ Injected automatically into the build via `ORG_GRADLE_PROJECT_` prefix or CLI fl
 * **`AppError`**: Structured domain error hierarchy:
   * `Network`, `Server`, `Authentication`, `NotFound`, `Validation`, `Unknown`.
 
-### 4. Base Use Cases (`govi.core.base.usecase`)
+### 4. Base Use Cases (`com.govi.androidbedrock.core.base.usecase`)
 * **`BaseUseCase<P, R>`**: Suspending use case executing on `AppDispatchers.io` with automated exception wrapping into `AppResult.Error(AppError.Unknown)`.
 * **`FlowUseCase<P, R>`**: Reactive use case emitting streams on `AppDispatchers.io` with structured `.catch { ... }` error handling.
 
@@ -213,35 +213,35 @@ class MainActivity : ComponentActivity() {
 
 `:core:ui` provides a production-grade, enterprise-ready Design System for all Jetpack Compose feature presentation modules:
 
-### Design Tokens & Theming (`govi.core.ui.theme`)
+### Design Tokens & Theming (`com.govi.androidbedrock.core.ui.theme`)
 * **`AppTheme`**: Material 3 theme supporting dynamic color on Android 12+ (`dynamicColor = true`), dark/light theme switching, and accessible color roles.
 * **Tokens**: Centralized color palette, typography scale (`AppTypography`), shape scales (`AppShapes`), and spacing tokens (`Spacing`, `MaterialTheme.spacing.medium`).
 
-### Form & Input Controls (`govi.core.ui.component.input`)
+### Form & Input Controls (`com.govi.androidbedrock.core.ui.component.input`)
 * **`AppTextField`**: Standard text input supporting labels, placeholders, leading icons, clear button, and inline validation error messages.
 * **`AppPasswordTextField`**: Secure password field with visibility toggle eye icon and password masking.
 * **`AppSearchField`**: Search input field with search icon, clear button, and `ImeAction.Search` callback.
 
-### Dialogs & Bottom Sheets (`govi.core.ui.component.dialog`)
+### Dialogs & Bottom Sheets (`com.govi.androidbedrock.core.ui.component.dialog`)
 * **`AppConfirmationDialog`**: Alert dialog for confirmations, dismissals, or destructive delete actions (`isDestructive = true`).
 * **`AppModalBottomSheet`**: Modal bottom sheet container with drag handle, title, close action, and content slot.
 
-### Status Badges & Chips (`govi.core.ui.component.badge`)
+### Status Badges & Chips (`com.govi.androidbedrock.core.ui.component.badge`)
 * **`StatusBadge`**: Visual status tag for entity states (e.g. `Success`, `Warning`, `Error`, `Info`, `Neutral`) with background tints and dot indicators.
 
-### Cards, Lists & Dividers (`govi.core.ui.component.card`)
+### Cards, Lists & Dividers (`com.govi.androidbedrock.core.ui.component.card`)
 * **`AppCard`**: Standardized cards supporting `Elevated`, `Outlined`, and `Filled` variants with unified padding.
 * **`AppListItem`**: Standard list item row with leading icon/avatar, title, subtitle, and trailing chevron/action slot.
 * **`AppDivider`**: Standard horizontal separator using theme outlineVariant tokens.
 
-### Asynchronous State & Feedback (`govi.core.ui.component`)
+### Asynchronous State & Feedback (`com.govi.androidbedrock.core.ui.component`)
 * **`AsyncState<T>`**: Generic state holder (`Loading`, `Success<T>`, `Error`, `Idle`).
 * **`AsyncContent`**: Composable with smooth crossfading, default or custom loading spinners, and error views with retry.
 * **`FullScreenLoadingView` & `InlineLoadingIndicator`**: Centered full-screen or compact inline spinners with optional status messages.
 * **`ErrorView`**: Alert layout with error icon, title, description, and "Retry" CTA.
 * **`EmptyStateView`**: Clean zero-data illustration/icon with title, description, and action button.
 
-### Skeleton Shimmer Loading (`govi.core.ui.component.shimmer`)
+### Skeleton Shimmer Loading (`com.govi.androidbedrock.core.ui.component.shimmer`)
 * **`Modifier.shimmer()`**: Custom animated gradient shimmer effect.
 * **`ShimmerBox`**: Rounded shimmer placeholder box.
 * **`ShimmerListItem`**: Skeleton card placeholder mimicking list items during initial loading.
@@ -359,20 +359,20 @@ The template provides a unified scaffolding Gradle task supporting both **Divide
    - `OrdersItem.kt` (domain model)
    - `OrdersRepository.kt` (repository interface)
    - `GetOrdersItemsUseCase.kt` (domain use case)
-   - `build.gradle.kts` with `govi.kotlin.jvm` (pure Kotlin JVM, zero Android dependencies)
+   - `build.gradle.kts` with `bedrock.kotlin.jvm` (pure Kotlin JVM, zero Android dependencies)
 2. **Generates `:feature:orders:data` submodule**:
    - `OrdersDto.kt` (kotlinx.serialization `@Serializable` DTO with `.toDomain()` mapper)
    - `OrdersApiService.kt` (Retrofit service)
    - `OrdersRepositoryImpl.kt` (repository implementation using `safeApiCall`)
    - `OrdersDataModule.kt` (Hilt dependency injection module)
-   - `build.gradle.kts` with `govi.android.library` and `govi.android.hilt`
+   - `build.gradle.kts` with `bedrock.android.library` and `bedrock.android.hilt`
 3. **Generates `:feature:orders:presentation` submodule**:
    - `OrdersUiState.kt` (state holder leveraging `AsyncState<List<OrdersItem>>`)
    - `OrdersViewModel.kt` (`@HiltViewModel` with state flow and lifecycle handling)
    - `OrdersScreen.kt` (Material 3 Compose UI utilizing `AsyncContent`, skeleton shimmer loading, LazyColumn, and `@Preview`)
    - `OrdersFeatureEntryImpl.kt` (`FeatureEntry` multibinding implementation)
    - `OrdersNavigationModule.kt` (Hilt `@IntoSet` multibinding module)
-   - `build.gradle.kts` with `govi.android.feature`
+   - `build.gradle.kts` with `bedrock.android.feature`
 4. **Registers in `settings.gradle.kts`**:
    - Appends `include(":feature:orders:domain")`, `include(":feature:orders:data")`, `include(":feature:orders:presentation")`
 5. **Wires into `app/build.gradle.kts`**:
@@ -388,7 +388,7 @@ The template provides a unified scaffolding Gradle task supporting both **Divide
 
 #### Automated Actions Executed:
 1. **Generates single `:feature:settings` module**:
-   - `govi.android.feature` convention plugin with resource prefix (`settings_`)
+   - `bedrock.android.feature` convention plugin with resource prefix (`settings_`)
    - `domain/` package: `SettingsItem.kt`, `SettingsRepository.kt`, `GetSettingsItemsUseCase.kt`
    - `data/` package: `SettingsDto.kt`, `SettingsApiService.kt`, `SettingsRepositoryImpl.kt`, `SettingsDataModule.kt`
    - `presentation/` package: `SettingsUiState.kt`, `SettingsViewModel.kt`, `SettingsScreen.kt`, `SettingsFeatureEntryImpl.kt`, `SettingsNavigationModule.kt`

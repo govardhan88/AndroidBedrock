@@ -5,10 +5,10 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
-        android:name=".GoviApplication"
+        android:name=".BedrockApplication"
         android:allowBackup="true"
         android:icon="@android:drawable/sym_def_app_icon"
-        android:label="Govi Clean Architecture"
+        android:label="Android Bedrock"
         android:roundIcon="@android:drawable/sym_def_app_icon"
         android:supportsRtl="true"
         android:theme="@android:style/Theme.Material.NoActionBar">

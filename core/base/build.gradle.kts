@@ -1,10 +1,10 @@
 plugins {
-    id("govi.android.library")
-    id("govi.android.hilt")
+    id("bedrock.android.library")
+    id("bedrock.android.hilt")
 }
 
 android {
-    namespace = "govi.core.base"
+    namespace = "com.govi.androidbedrock.core.base"
 }
 
 dependencies {

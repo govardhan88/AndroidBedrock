@@ -2,7 +2,7 @@ plugins {
     `kotlin-dsl`
 }
 
-group = "govi.buildlogic"
+group = "com.govi.androidbedrock.buildlogic"
 
 dependencies {
     compileOnly(libs.android.gradlePlugin)
@@ -15,28 +15,28 @@ dependencies {
 gradlePlugin {
     plugins {
         register("androidLibrary") {
-            id = "govi.android.library"
-            implementationClass = "govi.buildlogic.convention.AndroidLibraryConventionPlugin"
+            id = "bedrock.android.library"
+            implementationClass = "com.govi.androidbedrock.buildlogic.convention.AndroidLibraryConventionPlugin"
         }
         register("androidCompose") {
-            id = "govi.android.compose"
-            implementationClass = "govi.buildlogic.convention.AndroidComposeConventionPlugin"
+            id = "bedrock.android.compose"
+            implementationClass = "com.govi.androidbedrock.buildlogic.convention.AndroidComposeConventionPlugin"
         }
         register("androidHilt") {
-            id = "govi.android.hilt"
-            implementationClass = "govi.buildlogic.convention.AndroidHiltConventionPlugin"
+            id = "bedrock.android.hilt"
+            implementationClass = "com.govi.androidbedrock.buildlogic.convention.AndroidHiltConventionPlugin"
         }
         register("androidFeature") {
-            id = "govi.android.feature"
-            implementationClass = "govi.buildlogic.convention.AndroidFeatureConventionPlugin"
+            id = "bedrock.android.feature"
+            implementationClass = "com.govi.androidbedrock.buildlogic.convention.AndroidFeatureConventionPlugin"
         }
         register("kotlinJvm") {
-            id = "govi.kotlin.jvm"
-            implementationClass = "govi.buildlogic.convention.KotlinJvmConventionPlugin"
+            id = "bedrock.kotlin.jvm"
+            implementationClass = "com.govi.androidbedrock.buildlogic.convention.KotlinJvmConventionPlugin"
         }
         register("scaffolding") {
-            id = "govi.scaffolding"
-            implementationClass = "govi.buildlogic.scaffolding.ScaffoldingPlugin"
+            id = "bedrock.scaffolding"
+            implementationClass = "com.govi.androidbedrock.buildlogic.scaffolding.ScaffoldingPlugin"
         }
     }
 }
