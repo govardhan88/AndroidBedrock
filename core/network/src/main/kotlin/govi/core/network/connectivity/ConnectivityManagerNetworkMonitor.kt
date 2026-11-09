@@ -16,82 +16,80 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class ConnectivityManagerNetworkMonitor
-    @Inject
-    constructor(
-        @param:ApplicationContext private val context: Context,
-    ) : NetworkMonitor {
-        private val connectivityManager: ConnectivityManager? = context.getSystemService()
+class ConnectivityManagerNetworkMonitor @Inject constructor(
+    @param:ApplicationContext private val context: Context,
+) : NetworkMonitor {
+    private val connectivityManager: ConnectivityManager? = context.getSystemService()
 
-        override val isCurrentlyOnline: Boolean
-            get() {
-                val cm = connectivityManager ?: return false
-                val activeNetwork = cm.activeNetwork ?: return false
-                val capabilities = cm.getNetworkCapabilities(activeNetwork) ?: return false
-                return capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) &&
-                    capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
+    override val isCurrentlyOnline: Boolean
+        get() {
+            val cm = connectivityManager ?: return false
+            val activeNetwork = cm.activeNetwork ?: return false
+            val capabilities = cm.getNetworkCapabilities(activeNetwork) ?: return false
+            return capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) &&
+                capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
+        }
+
+    override val isOnline: Flow<Boolean> =
+        callbackFlow {
+            val cm = connectivityManager
+            if (cm == null) {
+                trySend(false)
+                close()
+                return@callbackFlow
             }
 
-        override val isOnline: Flow<Boolean> =
-            callbackFlow {
-                val cm = connectivityManager
-                if (cm == null) {
-                    trySend(false)
-                    close()
-                    return@callbackFlow
-                }
+            // Send initial connectivity state
+            trySend(isCurrentlyOnline)
 
-                // Send initial connectivity state
-                trySend(isCurrentlyOnline)
+            val callback =
+                object : ConnectivityManager.NetworkCallback() {
+                    private val networksWithInternet = mutableSetOf<Network>()
 
-                val callback =
-                    object : ConnectivityManager.NetworkCallback() {
-                        private val networksWithInternet = mutableSetOf<Network>()
-
-                        override fun onAvailable(network: Network) {
-                            val capabilities = cm.getNetworkCapabilities(network)
-                            val hasInternet =
-                                capabilities?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) == true &&
-                                    capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
-                            if (hasInternet) {
-                                networksWithInternet.add(network)
-                            }
-                            trySend(networksWithInternet.isNotEmpty() || isCurrentlyOnline)
+                    override fun onAvailable(network: Network) {
+                        val capabilities = cm.getNetworkCapabilities(network)
+                        val hasInternet =
+                            capabilities?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) == true &&
+                                capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
+                        if (hasInternet) {
+                            networksWithInternet.add(network)
                         }
-
-                        override fun onLost(network: Network) {
-                            networksWithInternet.remove(network)
-                            trySend(networksWithInternet.isNotEmpty() || isCurrentlyOnline)
-                        }
-
-                        override fun onCapabilitiesChanged(
-                            network: Network,
-                            networkCapabilities: NetworkCapabilities,
-                        ) {
-                            val hasInternet =
-                                networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) &&
-                                    networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
-
-                            if (hasInternet) {
-                                networksWithInternet.add(network)
-                            } else {
-                                networksWithInternet.remove(network)
-                            }
-                            trySend(networksWithInternet.isNotEmpty())
-                        }
+                        trySend(networksWithInternet.isNotEmpty() || isCurrentlyOnline)
                     }
 
-                val request =
-                    NetworkRequest
-                        .Builder()
-                        .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
-                        .build()
+                    override fun onLost(network: Network) {
+                        networksWithInternet.remove(network)
+                        trySend(networksWithInternet.isNotEmpty() || isCurrentlyOnline)
+                    }
 
-                cm.registerNetworkCallback(request, callback)
+                    override fun onCapabilitiesChanged(
+                        network: Network,
+                        networkCapabilities: NetworkCapabilities,
+                    ) {
+                        val hasInternet =
+                            networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) &&
+                                networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
 
-                awaitClose {
-                    cm.unregisterNetworkCallback(callback)
+                        if (hasInternet) {
+                            networksWithInternet.add(network)
+                        } else {
+                            networksWithInternet.remove(network)
+                        }
+                        trySend(networksWithInternet.isNotEmpty())
+                    }
                 }
-            }.distinctUntilChanged()
-                .conflate()
-    }
+
+            val request =
+                NetworkRequest
+                    .Builder()
+                    .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+                    .build()
+
+            cm.registerNetworkCallback(request, callback)
+
+            awaitClose {
+                cm.unregisterNetworkCallback(callback)
+            }
+        }.distinctUntilChanged()
+            .conflate()
+}

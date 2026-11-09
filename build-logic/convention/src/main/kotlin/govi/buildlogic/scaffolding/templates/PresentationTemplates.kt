@@ -37,44 +37,42 @@ object PresentationTemplates {
         import javax.inject.Inject
 
         @HiltViewModel
-        class ${className}ViewModel
-            @Inject
-            constructor(
-                private val getItemsUseCase: Get${className}ItemsUseCase,
-                private val appNavigator: AppNavigator,
-            ) : ViewModel() {
-                private val _uiState = MutableStateFlow(${className}UiState())
-                val uiState: StateFlow<${className}UiState> = _uiState.asStateFlow()
+        class ${className}ViewModel @Inject constructor(
+            private val getItemsUseCase: Get${className}ItemsUseCase,
+            private val appNavigator: AppNavigator,
+        ) : ViewModel() {
+            private val _uiState = MutableStateFlow(${className}UiState())
+            val uiState: StateFlow<${className}UiState> = _uiState.asStateFlow()
 
-                init {
-                    loadItems()
-                }
+            init {
+                loadItems()
+            }
 
-                fun loadItems() {
-                    viewModelScope.launch {
-                        _uiState.update { it.copy(itemsState = AsyncState.Loading) }
-                        getItemsUseCase().fold(
-                            onSuccess = { items ->
-                                _uiState.update { it.copy(itemsState = AsyncState.Success(items)) }
-                            },
-                            onFailure = { error ->
-                                _uiState.update {
-                                    it.copy(
-                                        itemsState =
-                                            AsyncState.Error(
-                                                error.message ?: "An unexpected error occurred",
-                                            ),
-                                    )
-                                }
-                            },
-                        )
-                    }
-                }
-
-                fun onBackClicked() {
-                    appNavigator.navigateBack()
+            fun loadItems() {
+                viewModelScope.launch {
+                    _uiState.update { it.copy(itemsState = AsyncState.Loading) }
+                    getItemsUseCase().fold(
+                        onSuccess = { items ->
+                            _uiState.update { it.copy(itemsState = AsyncState.Success(items)) }
+                        },
+                        onFailure = { error ->
+                            _uiState.update {
+                                it.copy(
+                                    itemsState =
+                                        AsyncState.Error(
+                                            error.message ?: "An unexpected error occurred",
+                                        ),
+                                )
+                            }
+                        },
+                    )
                 }
             }
+
+            fun onBackClicked() {
+                appNavigator.navigateBack()
+            }
+        }
         """.trimIndent() + "\n"
 
     fun screen(
@@ -299,18 +297,16 @@ object PresentationTemplates {
         import govi.feature.$featureName.presentation.${className}Route
         import javax.inject.Inject
 
-        class ${className}FeatureEntryImpl
-            @Inject
-            constructor() : FeatureEntry {
-                override fun registerRoute(
-                    navGraphBuilder: NavGraphBuilder,
-                    navController: NavHostController,
-                ) {
-                    navGraphBuilder.composable<AppRoute.$className> {
-                        ${className}Route()
-                    }
+        class ${className}FeatureEntryImpl @Inject constructor() : FeatureEntry {
+            override fun registerRoute(
+                navGraphBuilder: NavGraphBuilder,
+                navController: NavHostController,
+            ) {
+                navGraphBuilder.composable<AppRoute.$className> {
+                    ${className}Route()
                 }
             }
+        }
         """.trimIndent() + "\n"
 
     fun navigationModule(

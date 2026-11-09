@@ -11,18 +11,14 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class AppBaseUrlProvider
-    @Inject
-    constructor() : BaseUrlProvider {
-        override fun getBaseUrl(): String = BuildConfig.BASE_URL
-    }
+class AppBaseUrlProvider @Inject constructor() : BaseUrlProvider {
+    override fun getBaseUrl(): String = BuildConfig.BASE_URL
+}
 
 @Singleton
-class AppNetworkLoggingConfig
-    @Inject
-    constructor() : NetworkLoggingConfig {
-        override val isDebug: Boolean = BuildConfig.DEBUG
-    }
+class AppNetworkLoggingConfig @Inject constructor() : NetworkLoggingConfig {
+    override val isDebug: Boolean = BuildConfig.DEBUG
+}
 
 @Module
 @InstallIn(SingletonComponent::class)

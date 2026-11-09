@@ -8,15 +8,13 @@ import govi.core.navigation.route.AppRoute
 import govi.feature.users.presentation.UsersRoute
 import javax.inject.Inject
 
-class UsersFeatureEntryImpl
-    @Inject
-    constructor() : FeatureEntry {
-        override fun registerRoute(
-            navGraphBuilder: NavGraphBuilder,
-            navController: NavHostController,
-        ) {
-            navGraphBuilder.composable<AppRoute.Users> {
-                UsersRoute()
-            }
+class UsersFeatureEntryImpl @Inject constructor() : FeatureEntry {
+    override fun registerRoute(
+        navGraphBuilder: NavGraphBuilder,
+        navController: NavHostController,
+    ) {
+        navGraphBuilder.composable<AppRoute.Users> {
+            UsersRoute()
         }
     }
+}

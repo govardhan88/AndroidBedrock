@@ -42,12 +42,10 @@ object DomainTemplates {
         import govi.feature.$featureName.domain.repository.${className}Repository
         import javax.inject.Inject
 
-        class Get${className}ItemsUseCase
-            @Inject
-            constructor(
-                private val repository: ${className}Repository,
-            ) {
-                suspend operator fun invoke(): Result<List<${className}Item>> = repository.getItems()
-            }
+        class Get${className}ItemsUseCase @Inject constructor(
+            private val repository: ${className}Repository,
+        ) {
+            suspend operator fun invoke(): Result<List<${className}Item>> = repository.getItems()
+        }
         """.trimIndent() + "\n"
 }
