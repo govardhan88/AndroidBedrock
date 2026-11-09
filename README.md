@@ -1,6 +1,10 @@
 # Android Bedrock - Clean Architecture Starter Template
 
+[![Medium Article](https://img.shields.io/badge/Medium-Read_Architecture_Deep_Dive-black?logo=medium)](https://medium.com/@govardhanreddygosangi/building-a-production-ready-android-architecture-multi-module-convention-plugins-firebase-1a8c288a9375)
+
 A modular, production-grade Android Clean Architecture starter template powered by Gradle Convention Plugins, Jetpack Compose, Kotlin 2.x, Dagger Hilt, Retrofit, and automated feature scaffolding.
+
+> 📖 **Read the Full Deep-Dive on Medium**: [Building a Production-Ready Android Architecture: Multi-Module, Convention Plugins, Firebase Abstraction, and CI/CD Automation](https://medium.com/@govardhanreddygosangi/building-a-production-ready-android-architecture-multi-module-convention-plugins-firebase-1a8c288a9375)
 
 ---
 
@@ -17,7 +21,8 @@ The repository follows Google's recommended multi-module Clean Architecture guid
 │   ├── navigation/                     # AppRoute, AppNavigator, FeatureEntry multibindings
 │   ├── network/                        # Retrofit, NetworkMonitor, dynamic logging, auth interceptors
 │   ├── datastore/                      # Jetpack DataStore, TokenDataStore, persistent auth tokens
-│   └── ui/                             # Bedrock Compose Design System, NoInternetHost, tokens, AsyncState<T>
+│   ├── ui/                             # Bedrock Compose Design System, NoInternetHost, tokens, AsyncState<T>
+│   └── firebase/                       # AnalyticsTracker, CrashReporter, decoupled Firebase SDK abstractions
 └── feature/
     │   # 1. Divided Architecture (3 Submodules) - For Complex Core Domains
     ├── users/                          # Reference Divided Feature
