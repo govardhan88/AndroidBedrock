@@ -69,10 +69,10 @@ Base URLs and API environments are resolved dynamically using a four-tier fallba
 $$\text{Gradle Flag (-P)} \;\rightarrow\; \text{Environment / CI Secrets} \;\rightarrow\; \text{local.properties} \;\rightarrow\; \text{Default Fallback}$$
 
 ### 1. Local Development (`local.properties` - Gitignored)
-Override base URLs on your local machine without committing secrets:
+Copy `local.properties.example` to `local.properties` to override base URLs locally without committing changes:
 ```properties
-DEV_BASE_URL=https://api.dev.example.com/
-PROD_BASE_URL=https://api.example.com/
+DEV_BASE_URL=https://api.dev.yourdomain.com/
+PROD_BASE_URL=https://api.prod.yourdomain.com/
 ```
 
 ### 2. GitHub Actions CI/CD (`.github/workflows/ci.yml`)

@@ -131,20 +131,20 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        val defaultBaseUrl = resolveConfigProperty("BASE_URL", "https://api.example.com/")
+        val defaultBaseUrl = resolveConfigProperty("BASE_URL", "https://api.yourdomain.com/")
         buildConfigField("String", "BASE_URL", "\"$defaultBaseUrl\"")
     }
 
     buildTypes {
         debug {
-            val devUrl = resolveConfigProperty("DEV_BASE_URL", "https://api.dev.example.com/")
+            val devUrl = resolveConfigProperty("DEV_BASE_URL", "https://api.dev.yourdomain.com/")
             buildConfigField("String", "BASE_URL", "\"$devUrl\"")
         }
         release {
             val prodUrl =
                 resolveConfigProperty(
                     "PROD_BASE_URL",
-                    resolveConfigProperty("BASE_URL", "https://api.example.com/"),
+                    resolveConfigProperty("BASE_URL", "https://api.prod.yourdomain.com/"),
                 )
             buildConfigField("String", "BASE_URL", "\"$prodUrl\"")
             isMinifyEnabled = true
