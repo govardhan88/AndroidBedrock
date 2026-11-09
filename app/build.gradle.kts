@@ -120,8 +120,14 @@ android {
         applicationId = "com.govi.androidbedrock"
         minSdk = 24
         targetSdk = 35
-        versionCode = 1
-        versionName = "1.0.0"
+
+        val explicitCode = resolveConfigProperty("VERSION_CODE", "").toIntOrNull()
+        val baseCode = resolveConfigProperty("BASE_VERSION_CODE", "1000").toIntOrNull() ?: 1000
+        val buildNumber = resolveConfigProperty("BUILD_NUMBER", "")
+        val explicitVersionName = resolveConfigProperty("VERSION_NAME", "1.0.0")
+
+        versionCode = explicitCode ?: if (buildNumber.isNotEmpty()) baseCode + (buildNumber.toIntOrNull() ?: 0) else baseCode
+        versionName = if (buildNumber.isNotEmpty()) "$explicitVersionName-b$buildNumber" else explicitVersionName
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 

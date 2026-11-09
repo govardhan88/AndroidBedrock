@@ -16,6 +16,8 @@ jobs:
     name: Build, Test & Verify
     runs-on: ubuntu-latest
     timeout-minutes: 25
+    env:
+      ORG_GRADLE_PROJECT_BUILD_NUMBER: ${{ github.run_number }}
 
     steps:
       - name: Checkout repository
@@ -88,8 +90,9 @@ jobs:
           testers: ${{ secrets.FIREBASE_TESTERS }}
           file: app/build/outputs/apk/debug/app-debug.apk
           releaseNotes: |
-            Commit: ${{ github.sha }}
+            Build: #${{ github.run_number }}
             Branch: ${{ github.ref_name }}
+            Commit: ${{ github.sha }}
             Author: ${{ github.actor }}
             ${{ github.event.head_commit.message }}
         env:
