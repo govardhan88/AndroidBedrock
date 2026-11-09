@@ -11,19 +11,5 @@ import kotlinx.serialization.Serializable
 @Serializable
 sealed interface AppRoute {
     @Serializable
-    data object Users : AppRoute
-
-    @Serializable
-    data object Products : AppRoute
-
-    @Serializable
-    data class ProductDetail(
-        val productId: String,
-    ) : AppRoute
-
-    @Serializable
-    data object Fixture : AppRoute
-
-    @Serializable
-    data object Settings : AppRoute
+    data object Home : AppRoute
 }

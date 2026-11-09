@@ -89,21 +89,11 @@ android {
 }
 
 dependencies {
-    // Feature settings (compact)
-    implementation(project(":feature:settings"))
-    // Feature fixture
-    implementation(project(":feature:fixture:presentation"))
-    implementation(project(":feature:fixture:data"))
-    // Feature products
-    implementation(project(":feature:products:presentation"))
-    implementation(project(":feature:products:data"))
     implementation(project(":core:base"))
     implementation(project(":core:navigation"))
     implementation(project(":core:network"))
     implementation(project(":core:datastore"))
     implementation(project(":core:ui"))
-    implementation(project(":feature:users:presentation"))
-    implementation(project(":feature:users:data"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.activity.compose)

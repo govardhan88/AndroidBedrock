@@ -10,6 +10,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
 import govi.core.navigation.AppNavigator
@@ -72,8 +73,11 @@ class MainActivity : ComponentActivity() {
                     ) {
                         NavHost(
                             navController = navController,
-                            startDestination = AppRoute.Users,
+                            startDestination = AppRoute.Home,
                         ) {
+                            composable<AppRoute.Home> {
+                                StarterScreen()
+                            }
                             featureEntries.forEach { entry ->
                                 entry.registerRoute(this, navController)
                             }
