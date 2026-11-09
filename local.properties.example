@@ -1,0 +1,14 @@
+# ==============================================================================
+# Local Developer Configuration Template
+# Copy this file to 'local.properties' and fill in your custom endpoints
+# ==============================================================================
+
+# Android SDK Path (Automatically managed by Android Studio)
+# sdk.dir=/path/to/your/Android/sdk
+
+# API Base URL Templates
+DEV_BASE_URL=https://api.dev.yourdomain.com/
+PROD_BASE_URL=https://api.prod.yourdomain.com/
+
+# Optional: Custom path to your private Firebase google-services.json
+# google.services.json.path=/path/to/your/google-services.json
