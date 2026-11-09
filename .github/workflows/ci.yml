@@ -1,19 +1,21 @@
-name: Android CI/CD
+name: Android CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "base-tempate" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "main", "base-tempate" ]
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  build:
-    name: Build & Test
+  ci:
+    name: Build, Test & Verify
     runs-on: ubuntu-latest
+    timeout-minutes: 25
 
     steps:
       - name: Checkout repository
@@ -26,18 +28,33 @@ jobs:
           java-version: '21'
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v3
+        uses: gradle/actions/setup-gradle@v4
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
+      - name: Run Spotless Code Format Check
+        run: ./gradlew spotlessCheck --stacktrace
+
       - name: Run Unit Tests
         run: ./gradlew test --stacktrace
+
+      - name: Upload Test Results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: unit-test-results
+          path: "**/build/reports/tests/**"
 
       - name: Build Debug APK
         run: ./gradlew assembleDebug --stacktrace
         env:
           ORG_GRADLE_PROJECT_DEV_BASE_URL: ${{ secrets.DEV_BASE_URL }}
+          ORG_GRADLE_PROJECT_PROD_BASE_URL: ${{ secrets.PROD_BASE_URL }}
+
+      - name: Verify Minified Release APK & ProGuard
+        run: ./gradlew assembleRelease --stacktrace
+        env:
           ORG_GRADLE_PROJECT_PROD_BASE_URL: ${{ secrets.PROD_BASE_URL }}
 
       - name: Upload Debug APK
