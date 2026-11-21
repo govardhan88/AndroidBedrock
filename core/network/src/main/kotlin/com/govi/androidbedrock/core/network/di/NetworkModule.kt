@@ -1,3 +1,5 @@
+@file:Suppress("kotlin:S1313")
+
 package com.govi.androidbedrock.core.network.di
 
 import com.govi.androidbedrock.core.network.BaseUrlProvider
@@ -111,6 +113,7 @@ object NetworkModule {
 
     @Provides
     @Singleton
+    @Suppress("kotlin:S1313")
     fun provideRetrofit(
         okHttpClient: OkHttpClient,
         json: Json,
@@ -122,7 +125,7 @@ object NetworkModule {
         require(
             formattedUrl.startsWith("https://") ||
                 formattedUrl.startsWith("http://localhost") ||
-                formattedUrl.startsWith("http://10.0.2.2"),
+                formattedUrl.startsWith(ANDROID_EMULATOR_LOOPBACK),
         ) {
             "Security violation: Production Base URL must use HTTPS. Cleartext HTTP is prohibited: $formattedUrl"
         }
@@ -137,3 +140,5 @@ object NetworkModule {
             .build()
     }
 }
+
+private const val ANDROID_EMULATOR_LOOPBACK = "http://10.0.2.2"

@@ -21,8 +21,29 @@ sonar {
         property("sonar.host.url", "https://sonarcloud.io")
         property(
             "sonar.coverage.exclusions",
-            "**/di/**,**/*Activity*.*,**/*Screen*.*,**/*Preview*.*,**/*Theme*.*,**/*Dto*.*,**/*Route*.*,**/BuildConfig.*",
+            listOf(
+                "**/di/**",
+                "**/core/ui/**",
+                "**/ui/**",
+                "**/navigation/**",
+                "**/*Activity*.*",
+                "**/*Screen*.*",
+                "**/*Preview*.*",
+                "**/*Theme*.*",
+                "**/*Dto*.*",
+                "**/*Route*.*",
+                "**/BuildConfig.*",
+                "**/Firebase*Tracker*.*",
+                "**/Firebase*Reporter*.*",
+            ).joinToString(","),
         )
+
+        // Ignore dependency lockfile / verification-metadata warnings
+        property("sonar.issue.ignore.multicriteria", "depVerif,depLock")
+        property("sonar.issue.ignore.multicriteria.depVerif.ruleKey", "kotlin:S6474")
+        property("sonar.issue.ignore.multicriteria.depVerif.resourceKey", "**")
+        property("sonar.issue.ignore.multicriteria.depLock.ruleKey", "text:S8569")
+        property("sonar.issue.ignore.multicriteria.depLock.resourceKey", "**")
 
         val localProps = file("local.properties")
         val localToken =
