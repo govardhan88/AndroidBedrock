@@ -10,7 +10,21 @@ plugins {
     alias(libs.plugins.spotless)
     alias(libs.plugins.google.services) apply false
     alias(libs.plugins.firebase.crashlytics) apply false
+    alias(libs.plugins.sonar)
     id("bedrock.scaffolding")
+}
+
+sonar {
+    properties {
+        property("sonar.projectKey", "govardhan88_AndroidBedrock")
+        property("sonar.organization", "govardhan88")
+        property("sonar.host.url", "https://sonarcloud.io")
+        property("sonar.coverage.jacoco.xmlReportPaths", "**/build/reports/coverage/test/debug/report.xml")
+        property(
+            "sonar.coverage.exclusions",
+            "**/di/**,**/*Activity*.*,**/*Screen*.*,**/*Preview*.*,**/*Theme*.*,**/*Dto*.*,**/*Route*.*,**/BuildConfig.*",
+        )
+    }
 }
 
 spotless {
