@@ -29,6 +29,12 @@ internal fun Project.configureKotlinAndroid(libraryExtension: LibraryExtension) 
             }
         }
 
+        buildTypes {
+            getByName("debug") {
+                enableUnitTestCoverage = file("src/test").exists()
+            }
+        }
+
         compileOptions {
             sourceCompatibility = JavaVersion.VERSION_21
             targetCompatibility = JavaVersion.VERSION_21
