@@ -19,7 +19,6 @@ sonar {
         property("sonar.projectKey", "govardhan88_AndroidBedrock")
         property("sonar.organization", "govardhan88")
         property("sonar.host.url", "https://sonarcloud.io")
-        property("sonar.coverage.jacoco.xmlReportPaths", "**/build/reports/coverage/test/debug/report.xml")
         property(
             "sonar.coverage.exclusions",
             "**/di/**,**/*Activity*.*,**/*Screen*.*,**/*Preview*.*,**/*Theme*.*,**/*Dto*.*,**/*Route*.*,**/BuildConfig.*",
@@ -42,6 +41,17 @@ sonar {
 
         if (!token.isNullOrBlank()) {
             property("sonar.token", token)
+        }
+    }
+}
+
+subprojects {
+    sonar {
+        properties {
+            property(
+                "sonar.coverage.jacoco.xmlReportPaths",
+                "${layout.buildDirectory.get()}/reports/coverage/test/debug/report.xml",
+            )
         }
     }
 }
