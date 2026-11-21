@@ -79,6 +79,37 @@ class DemoViewModelTest {
         }
 
     @Test
+    fun `LoadItems intent reloads demo items`() =
+        runTest {
+            viewModel.processIntent(DemoIntent.LoadItems)
+            advanceUntilIdle()
+            val state = viewModel.uiState.value
+            assertTrue(state.itemsState is AsyncState.Success)
+        }
+
+    @Test
+    fun `failure in repository updates state to Error`() =
+        runTest {
+            val failingRepo =
+                object : com.govi.androidbedrock.feature.demo.domain.repository.DemoRepository {
+                    override suspend fun getItems() =
+                        Result.failure<List<com.govi.androidbedrock.feature.demo.domain.model.DemoItem>>(
+                            RuntimeException("Repository failure"),
+                        )
+
+                    override suspend fun getItemById(id: String) =
+                        Result.failure<com.govi.androidbedrock.feature.demo.domain.model.DemoItem>(
+                            RuntimeException("Not found"),
+                        )
+                }
+            val failingViewModel = DemoViewModel(GetDemoItemsUseCase(failingRepo), navigator)
+            advanceUntilIdle()
+            val state = failingViewModel.uiState.value
+            assertTrue(state.itemsState is AsyncState.Error)
+            assertEquals("Repository failure", (state.itemsState as AsyncState.Error).message)
+        }
+
+    @Test
     fun `OptionClicked intent navigates to DemoDetail route`() =
         runTest {
             viewModel.processIntent(DemoIntent.OptionClicked("ui-components"))
