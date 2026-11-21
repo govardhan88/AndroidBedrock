@@ -83,4 +83,28 @@ class AppResultTest {
         assertFalse(successCalled)
         assertTrue(errorCalled)
     }
+
+    @Test
+    fun `all app error hierarchy variants instantiate with expected defaults`() {
+        val timeout = AppError.Timeout()
+        assertEquals("Connection timed out. Please try again.", timeout.message)
+
+        val accessDenied = AppError.AccessDenied()
+        assertEquals("You do not have permission to access this resource.", accessDenied.message)
+
+        val conflict = AppError.Conflict()
+        assertEquals("A conflict occurred with the current state of the resource.", conflict.message)
+
+        val rateLimit = AppError.RateLimitExceeded()
+        assertEquals("Too many requests. Please wait a moment and try again.", rateLimit.message)
+
+        val clientError = AppError.ClientError(code = 400)
+        assertEquals("The request could not be processed.", clientError.message)
+        assertEquals(400, clientError.code)
+
+        val validation = AppError.Validation(field = "username", errors = mapOf("username" to "Required"))
+        assertEquals("Validation failed.", validation.message)
+        assertEquals("username", validation.field)
+        assertEquals("Required", validation.errors["username"])
+    }
 }
