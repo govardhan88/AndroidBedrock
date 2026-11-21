@@ -1,6 +1,7 @@
 package com.govi.androidbedrock
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,6 +18,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Info
@@ -36,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import com.govi.androidbedrock.core.ui.component.badge.StatusBadge
 import com.govi.androidbedrock.core.ui.component.badge.StatusVariant
 import com.govi.androidbedrock.core.ui.component.bar.AppTopBar
+import com.govi.androidbedrock.core.ui.component.button.SecondaryButton
 import com.govi.androidbedrock.core.ui.component.card.AppCard
 import com.govi.androidbedrock.core.ui.component.card.CardVariant
 import com.govi.androidbedrock.core.ui.theme.spacing
@@ -43,10 +46,14 @@ import com.govi.androidbedrock.core.ui.theme.spacing
 /**
  * Starter screen displayed on fresh installations of the Android Bedrock base template.
  *
- * Provides a clean overview of foundational modules and instructions for scaffolding new features.
+ * Provides a clean overview of foundational modules, quick demo navigation, and feature scaffolding instructions.
  */
 @Composable
-fun StarterScreen(modifier: Modifier = Modifier) {
+fun StarterScreen(
+    onNavigateToDemo: () -> Unit = {},
+    onOptionClick: (String) -> Unit = {},
+    modifier: Modifier = Modifier,
+) {
     Scaffold(
         topBar = {
             AppTopBar(title = "Android Bedrock")
@@ -85,6 +92,61 @@ fun StarterScreen(modifier: Modifier = Modifier) {
                     StatusBadge(
                         text = "Clean State",
                         variant = StatusVariant.Success,
+                    )
+                }
+            }
+
+            // Interactive Demo Section
+            Text(
+                text = "Interactive Feature Demos",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold,
+            )
+
+            AppCard(variant = CardVariant.Outlined) {
+                Column(verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)) {
+                    DemoOptionRow(
+                        title = "1. Design System & UI Components",
+                        desc = "Buttons with loading/disabled states, text fields, cards, and shimmer loaders",
+                        badge = "Compose",
+                        onClick = { onOptionClick("ui-components") },
+                    )
+                    DemoOptionRow(
+                        title = "2. Network Resilience & Error Parsing",
+                        desc = "Simulate HTTP 400-503, HTTP/2 empty reason fallback, and JSON error parser",
+                        badge = "SafeApiCall",
+                        onClick = { onOptionClick("network-resilience") },
+                    )
+                    DemoOptionRow(
+                        title = "3. Connectivity Monitor & Offline Formats",
+                        desc = "Live network detection, 4 offline UI formats (Dialog, Banner, BottomSheet, Snackbar)",
+                        badge = "NetworkMonitor",
+                        onClick = { onOptionClick("offline-detection") },
+                    )
+                    DemoOptionRow(
+                        title = "4. Encrypted Token DataStore",
+                        desc = "Persist, inspect, and clear auth access & refresh tokens with DataStore",
+                        badge = "DataStore",
+                        onClick = { onOptionClick("secure-datastore") },
+                    )
+                    DemoOptionRow(
+                        title = "5. Analytics Tracker & Crash Reporting",
+                        desc = "Structured event logging with parameters and non-fatal Crashlytics error reports",
+                        badge = "Telemetry",
+                        onClick = { onOptionClick("telemetry") },
+                    )
+                    DemoOptionRow(
+                        title = "6. MVI Architecture & State Stream",
+                        desc = "Unidirectional data flow: dispatch UiIntent, observe UiState, emit UiEffects",
+                        badge = "MVI",
+                        onClick = { onOptionClick("mvi-architecture") },
+                    )
+
+                    Spacer(modifier = Modifier.height(MaterialTheme.spacing.extraSmall))
+                    SecondaryButton(
+                        text = "Open Showcase Hub",
+                        onClick = onNavigateToDemo,
+                        modifier = Modifier.fillMaxWidth(),
                     )
                 }
             }
@@ -187,6 +249,50 @@ fun StarterScreen(modifier: Modifier = Modifier) {
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun DemoOptionRow(
+    title: String,
+    desc: String,
+    badge: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .clickable(onClick = onClick)
+                .padding(vertical = MaterialTheme.spacing.extraSmall),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
+    ) {
+        Column(modifier = Modifier.weight(1f)) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.extraSmall),
+            ) {
+                StatusBadge(text = badge, variant = StatusVariant.Info)
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.labelMedium,
+                    fontWeight = FontWeight.Bold,
+                )
+            }
+            Text(
+                text = desc,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+        Icon(
+            imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+            contentDescription = "Open $title",
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.size(16.dp),
+        )
     }
 }
 

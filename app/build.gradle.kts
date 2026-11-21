@@ -169,6 +169,8 @@ android {
 }
 
 dependencies {
+    // Feature demo (compact)
+    implementation(project(":feature:demo"))
     implementation(project(":core:base"))
     implementation(project(":core:navigation"))
     implementation(project(":core:network"))

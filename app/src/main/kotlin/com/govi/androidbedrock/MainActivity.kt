@@ -76,7 +76,10 @@ class MainActivity : ComponentActivity() {
                             startDestination = AppRoute.Home,
                         ) {
                             composable<AppRoute.Home> {
-                                StarterScreen()
+                                StarterScreen(
+                                    onNavigateToDemo = { appNavigator.navigateTo(AppRoute.Demo) },
+                                    onOptionClick = { optionId -> appNavigator.navigateTo(AppRoute.DemoDetail(optionId)) },
+                                )
                             }
                             featureEntries.forEach { entry ->
                                 entry.registerRoute(this, navController)

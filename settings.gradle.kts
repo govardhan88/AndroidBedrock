@@ -27,3 +27,6 @@ include(":core:firebase")
 
 // Application entry
 include(":app")
+
+// Feature: demo (compact)
+include(":feature:demo")
