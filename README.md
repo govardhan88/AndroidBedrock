@@ -32,7 +32,7 @@ The repository follows Google's recommended multi-module Clean Architecture guid
     │
     │   # 2. Compact Architecture (Single Module) - For Lightweight / UI-centric Screens
     └── settings/                       # Reference Compact Feature (bedrock.android.feature)
-        └── src/main/kotlin/govi/feature/settings/
+        └── src/main/kotlin/com/govi/androidbedrock/feature/settings/
             ├── domain/                 # Internal UseCase and Models
             ├── data/                   # Internal API service and Repository implementation
             └── presentation/           # Compose Screen, ViewModel, and FeatureEntry multibinding
@@ -265,7 +265,7 @@ class MainActivity : ComponentActivity() {
 * **`SnackbarController` & `AppSnackbarHost`**: Decoupled ViewModel-to-UI Snackbar dispatch channel.
 
 ### Live Design System Showcase
-* **[`DesignSystemShowcase`](file:///Users/tejendranathreddy/AndroidStudioProjects/clean-architecture-template/core/ui/src/main/kotlin/govi/core/ui/preview/DesignSystemShowcase.kt)**: Complete interactive catalog preview displaying all components side-by-side.
+* **[`DesignSystemShowcase`](core/ui/src/main/kotlin/com/govi/androidbedrock/core/ui/preview/DesignSystemShowcase.kt)**: Complete interactive catalog preview displaying all components side-by-side.
 
 ### 🏛️ Jetpack Compose Architecture Principles
 All presentation screens adhere to official Android Architecture and Jetpack Compose gold standards:
@@ -439,9 +439,9 @@ build-logic/convention/src/main/kotlin/govi/buildlogic/scaffolding/
 
 **Adding Future Generators**:
 To add new scaffolding tasks (such as `createUseCase`, `createRepository`, or `createDemoApp`):
-1. Create a new task class in `govi/buildlogic/scaffolding/`
-2. Add corresponding template generators under `govi/buildlogic/scaffolding/templates/`
-3. Register the task in [`ScaffoldingPlugin.kt`](file:///Users/tejendranathreddy/AndroidStudioProjects/clean-architecture-template/build-logic/convention/src/main/kotlin/govi/buildlogic/scaffolding/ScaffoldingPlugin.kt).
+1. Create a new task class in `build-logic/convention/src/main/kotlin/com/govi/androidbedrock/buildlogic/scaffolding/`
+2. Add corresponding template generators under `build-logic/convention/src/main/kotlin/com/govi/androidbedrock/buildlogic/scaffolding/templates/`
+3. Register the task in [`ScaffoldingPlugin.kt`](build-logic/convention/src/main/kotlin/com/govi/androidbedrock/buildlogic/scaffolding/ScaffoldingPlugin.kt).
 
 ---
 
@@ -489,8 +489,5 @@ To configure git hooks on any machine or CI:
 ./gradlew test
 ```
 
-### Setting Active Workspace in Antigravity IDE
-Open the folder in Antigravity or VS Code / Android Studio:
-```
-/Users/tejendranathreddy/AndroidStudioProjects/clean-architecture-template
-```
+### Open in IDE
+Open the project root directory in Android Studio or your preferred IDE.
