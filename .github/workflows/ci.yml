@@ -76,7 +76,7 @@ jobs:
         run: ./gradlew test --stacktrace
 
       - name: Generate JaCoCo Code Coverage Reports
-        run: ./gradlew createDebugUnitTestCoverageReport --stacktrace
+        run: ./gradlew createDebugUnitTestCoverageReport --no-parallel --stacktrace
 
       - name: Run SonarCloud Code Analysis
         if: env.SONAR_TOKEN != ''

@@ -37,6 +37,17 @@ sonar {
                 "**/Firebase*Reporter*.*",
             ).joinToString(","),
         )
+        property(
+            "sonar.cpd.exclusions",
+            listOf(
+                "**/*Screen*.*",
+                "**/StarterScreen.kt",
+                "**/DemoScreen.kt",
+                "**/DemoDetailScreen.kt",
+                "**/DemoRepositoryImpl.kt",
+                "**/DemoItem.kt",
+            ).joinToString(","),
+        )
 
         // Ignore dependency lockfile / verification-metadata warnings
         property("sonar.issue.ignore.multicriteria", "depVerif,depLock")

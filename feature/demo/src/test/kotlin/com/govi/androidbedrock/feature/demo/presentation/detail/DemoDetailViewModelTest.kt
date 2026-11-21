@@ -294,6 +294,89 @@ class DemoDetailViewModelTest {
         }
 
     @Test
+    fun `loadOption with invalid optionId sets errorMessage`() =
+        runTest {
+            viewModel.loadOption("non-existent-option")
+            advanceUntilIdle()
+
+            val state = viewModel.uiState.value
+            assertTrue(state.errorMessage?.contains("not found", ignoreCase = true) == true)
+        }
+
+    @Test
+    fun `LoadOption intent triggers loadOption`() =
+        runTest {
+            viewModel.processIntent(DemoDetailIntent.LoadOption("mvi-architecture"))
+            advanceUntilIdle()
+
+            val state = viewModel.uiState.value
+            assertEquals("mvi-architecture", state.optionId)
+            assertNotNull(state.demoItem)
+        }
+
+    @Test
+    fun `ToggleButtonLoading updates isButtonLoading and finishes`() =
+        runTest {
+            viewModel.processIntent(DemoDetailIntent.ToggleButtonLoading)
+            testScheduler.runCurrent()
+            assertTrue(viewModel.uiState.value.isButtonLoading)
+            advanceUntilIdle()
+            assertTrue(!viewModel.uiState.value.isButtonLoading)
+        }
+
+    @Test
+    fun `TriggerMviAsync sets running and increments counter by 10`() =
+        runTest {
+            viewModel.processIntent(DemoDetailIntent.TriggerMviAsync)
+            testScheduler.runCurrent()
+            assertTrue(viewModel.uiState.value.isMviAsyncRunning)
+            advanceUntilIdle()
+            assertTrue(!viewModel.uiState.value.isMviAsyncRunning)
+            assertEquals(10, viewModel.uiState.value.mviCounter)
+        }
+
+    @Test
+    fun `ToggleShimmer toggles shimmer state`() =
+        runTest {
+            val initial = viewModel.uiState.value.isShimmerActive
+            viewModel.processIntent(DemoDetailIntent.ToggleShimmer)
+            assertEquals(!initial, viewModel.uiState.value.isShimmerActive)
+        }
+
+    @Test
+    fun `SelectOfflineFormat updates activeOfflineFormat`() =
+        runTest {
+            viewModel.processIntent(
+                DemoDetailIntent.SelectOfflineFormat("Banner"),
+            )
+            assertEquals("Banner", viewModel.uiState.value.activeOfflineFormat)
+        }
+
+    @Test
+    fun `UpdateInputText and UpdatePasswordText update input states`() =
+        runTest {
+            viewModel.processIntent(DemoDetailIntent.UpdateInputText("sample input"))
+            assertEquals("sample input", viewModel.uiState.value.inputSampleText)
+
+            viewModel.processIntent(DemoDetailIntent.UpdatePasswordText("secret123"))
+            assertEquals("secret123", viewModel.uiState.value.passwordSampleText)
+        }
+
+    @Test
+    fun `SimulateHttpCode covers all HTTP error branches`() =
+        runTest {
+            val codes = listOf(400, 401, 403, 404, 409, 429, 500, 503, 999)
+            for (code in codes) {
+                viewModel.processIntent(DemoDetailIntent.SimulateHttpCode(code))
+                assertEquals(code, viewModel.uiState.value.simulatedHttpCode)
+                assertTrue(
+                    viewModel.uiState.value.simulatedParsedError
+                        .isNotBlank(),
+                )
+            }
+        }
+
+    @Test
     fun `IncrementMviCounter increases mviCounter`() =
         runTest {
             viewModel.processIntent(DemoDetailIntent.IncrementMviCounter)
