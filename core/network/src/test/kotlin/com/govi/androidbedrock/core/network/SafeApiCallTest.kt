@@ -40,6 +40,26 @@ class SafeApiCallTest {
         }
 
     @Test
+    fun safeApiResultCall_returnsAppResultSuccess_whenResponseIsSuccessful() =
+        runTest {
+            val result = safeApiResultCall { Response.success("success_data") }
+            assertTrue(result.isSuccess)
+            assertEquals("success_data", result.getOrNull())
+        }
+
+    @Test
+    fun safeApiResultCall_returnsAppResultError_whenResponseIsHttpError() =
+        runTest {
+            val errorResponse =
+                Response.error<String>(
+                    401,
+                    "".toResponseBody("application/json".toMediaType()),
+                )
+            val result = safeApiResultCall { errorResponse }
+            assertTrue(result.isError)
+        }
+
+    @Test
     fun safeApiCall_returnsException_whenIOExceptionThrown() =
         runTest {
             val exception = java.io.IOException("Network down")

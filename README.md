@@ -103,6 +103,12 @@ Injected automatically into the build via `ORG_GRADLE_PROJECT_` prefix or CLI fl
 * **Zero-Configuration Pluggability**: Bound via Dagger `@BindsOptionalOf`. If an application does not bind an `AuthTokenProvider`, OkHttp operates with zero auth overhead.
 * **Multibound Interceptors (`@NetworkInterceptors`)**: Any module can contribute custom OkHttp interceptors (e.g. Chucker, Cache, Analytics) via Dagger Hilt `@Provides @IntoSet @NetworkInterceptors`.
 
+### Comprehensive Remote Error Handling (`:core:network/error`)
+* **`HttpErrorMessages`**: Comprehensive HTTP status code dictionary mapping 4xx and 5xx status codes to human-readable user messages, completely eliminating HTTP/2 blank status reason phrases.
+* **`RemoteErrorParser`**: Multi-format JSON error deserializer extracting backend error messages, custom error codes, and field-level validation errors (supporting key-value maps, error arrays, and string messages) with resilient fail-safe fallbacks.
+* **`NetworkErrorMapper`**: Maps HTTP status codes and low-level I/O exceptions (`SocketTimeoutException`, `UnknownHostException`, `ConnectException`, `SSLHandshakeException`) into domain `AppError` categories.
+* **`safeApiResultCall` & `.toAppResult()`**: Directly transforms Retrofit calls and `NetworkResult<T>` into Clean Architecture `AppResult<T>` domain monads in a single line.
+
 ---
 
 ## 💾 2.5. Token Persistence & Jetpack DataStore (`:core:datastore`)
@@ -142,7 +148,7 @@ Injected automatically into the build via `ORG_GRADLE_PROJECT_` prefix or CLI fl
   * `onSuccess { ... }` & `onError { ... }`: Declarative chaining.
   * `getOrNull()`: Safe nullable extraction.
 * **`AppError`**: Structured domain error hierarchy:
-  * `Network`, `Server`, `Authentication`, `NotFound`, `Validation`, `Unknown`.
+  * `Network`, `Timeout`, `Server`, `Authentication`, `AccessDenied`, `NotFound`, `Conflict`, `RateLimitExceeded`, `Validation`, `ClientError`, `Unknown`.
 
 ### 4. Base Use Cases (`com.govi.androidbedrock.core.base.usecase`)
 * **`BaseUseCase<P, R>`**: Suspending use case executing on `AppDispatchers.io` with automated exception wrapping into `AppResult.Error(AppError.Unknown)`.

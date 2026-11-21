@@ -8,6 +8,8 @@ android {
 }
 
 dependencies {
+    implementation(project(":core:base"))
+
     implementation(libs.retrofit.core)
     implementation(libs.retrofit.converter.kotlinx.serialization)
     implementation(libs.kotlinx.serialization.json)
