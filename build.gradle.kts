@@ -24,6 +24,25 @@ sonar {
             "sonar.coverage.exclusions",
             "**/di/**,**/*Activity*.*,**/*Screen*.*,**/*Preview*.*,**/*Theme*.*,**/*Dto*.*,**/*Route*.*,**/BuildConfig.*",
         )
+
+        val localProps = file("local.properties")
+        val localToken =
+            if (localProps.exists()) {
+                val props = java.util.Properties()
+                localProps.inputStream().use { props.load(it) }
+                props.getProperty("SONAR_TOKEN") ?: props.getProperty("sonar.token")
+            } else {
+                null
+            }
+
+        val token =
+            providers.environmentVariable("SONAR_TOKEN").orNull?.takeIf { it.isNotBlank() }
+                ?: localToken?.takeIf { it.isNotBlank() }
+                ?: providers.gradleProperty("sonar.token").orNull
+
+        if (!token.isNullOrBlank()) {
+            property("sonar.token", token)
+        }
     }
 }
 
