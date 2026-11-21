@@ -12,8 +12,35 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  detect-changes:
+    name: Check Changed Files
+    runs-on: ubuntu-latest
+    outputs:
+      should_build: ${{ steps.filter.outputs.code == 'true' || github.event_name == 'workflow_dispatch' }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Detect file changes
+        uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            code:
+              - 'app/**'
+              - 'core/**'
+              - 'feature/**'
+              - 'build-logic/**'
+              - 'gradle/**'
+              - '*.gradle.kts'
+              - 'gradle.properties'
+              - 'local.properties.example'
+              - '.github/workflows/**'
+
   ci:
     name: Build, Test & Verify
+    needs: detect-changes
+    if: needs.detect-changes.outputs.should_build == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 25
     env:
@@ -99,3 +126,23 @@ jobs:
         env:
           FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
           FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
+
+  ci-status:
+    name: CI Merge Gate
+    needs: [detect-changes, ci]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Evaluate CI Status
+        run: |
+          BUILD_RESULT="${{ needs.ci.result }}"
+          if [ "$BUILD_RESULT" = "success" ]; then
+            echo "✅ Code checks passed successfully."
+            exit 0
+          elif [ "$BUILD_RESULT" = "skipped" ]; then
+            echo "⚡ Docs-only change detected. Heavy build skipped, merge allowed."
+            exit 0
+          else
+            echo "❌ CI failed with status: $BUILD_RESULT"
+            exit 1
+          fi
