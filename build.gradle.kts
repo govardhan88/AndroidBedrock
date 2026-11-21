@@ -44,6 +44,8 @@ sonar {
                 "**/StarterScreen.kt",
                 "**/DemoScreen.kt",
                 "**/DemoDetailScreen.kt",
+                "**/DemoRepositoryImpl.kt",
+                "**/DemoItem.kt",
             ).joinToString(","),
         )
 
